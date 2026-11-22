@@ -90,7 +90,7 @@ export default function App() {
                 <p>I enjoy exploring new technologies, creating designs in <strong>Figma</strong>, and using <strong>AI to improve my development workflow</strong>. I'm always learning, experimenting, and building solutions that make everyday tasks easier.</p>
               </div>
               <button type="button" className="about-link" onClick={() => setNotice('The About section is planned for a later phase.')}>
-                {reduced ? <span>More about me</span> : <SplitText text="More about me" tag="span" splitType="words" effect="fade" duration={0.45} delay={0.07} trigger="view" textAlign="left" />}
+                {reduced ? <span>More about me</span> : <SplitText text="More about me" tag="span" splitType="words" effect="fade" from={{ opacity: 0.55 }} to={{ opacity: 1 }} duration={0.35} delay={0.05} trigger="load" textAlign="left" />}
                 <span className="about-arrow" aria-hidden="true">→</span>
               </button>
             </div>
