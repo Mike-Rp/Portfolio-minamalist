@@ -2,14 +2,7 @@
 
 import { useEffect, useRef, type ButtonHTMLAttributes, type CSSProperties, type ReactNode } from 'react';
 
-const SIZES: Record<SpecularButtonSize, string> = {
-  sm: 'px-5 py-2.5 text-[0.875rem]',
-  md: 'px-7 py-3.5 text-[1rem]',
-  lg: 'px-[38px] py-[18px] text-[1.125rem]'
-};
-
-const BUTTON =
-  'relative isolate m-0 inline-flex cursor-pointer items-center justify-center gap-[0.5em] border-0 [font-family:inherit] font-medium leading-none tracking-[0.01em] [color:var(--sb-text-color)] [border-radius:var(--sb-radius)] [background:color-mix(in_srgb,var(--sb-tint)_calc(var(--sb-tint-opacity)*100%),transparent)] shadow-[0_10px_24px_-14px_rgba(0,0,0,0.45)] [-webkit-backdrop-filter:blur(var(--sb-blur))] [backdrop-filter:blur(var(--sb-blur))] outline-none [-webkit-tap-highlight-color:transparent] transition-transform duration-250 ease-[cubic-bezier(0.2,0.8,0.2,1)] active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-[3px] focus-visible:[outline-color:color-mix(in_srgb,var(--sb-text-color)_55%,transparent)] disabled:cursor-default disabled:opacity-50 disabled:active:scale-100';
+import './SpecularButton.css';
 
 const PAD = 24;
 const TAU = Math.PI * 2;
@@ -477,7 +470,6 @@ const SpecularButton = ({
       gl.deleteBuffer(buffer);
       gl.deleteVertexArray(vao);
       gl.deleteProgram(program);
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
     };
   }, []);
 
@@ -491,7 +483,7 @@ const SpecularButton = ({
       type={type}
       disabled={disabled}
       onClick={onClick}
-      className={`${BUTTON} ${SIZES[size] ?? SIZES.lg}${className ? ` ${className}` : ''}`}
+      className={`specular-button specular-button--${size}${className ? ` ${className}` : ''}`}
       style={
         {
           '--sb-radius': `${radius}px`,
@@ -504,12 +496,8 @@ const SpecularButton = ({
       }
       {...rest}
     >
-      <canvas
-        ref={canvasRef}
-        className="pointer-events-none absolute -inset-6 z-[1] block h-[calc(100%+48px)] w-[calc(100%+48px)]"
-        aria-hidden="true"
-      />
-      <span className="relative z-[2] inline-flex items-center gap-[inherit]">{children}</span>
+      <canvas ref={canvasRef} className="specular-button__light" aria-hidden="true" />
+      <span className="specular-button__label">{children}</span>
     </button>
   );
 };

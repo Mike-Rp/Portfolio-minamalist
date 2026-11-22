@@ -3,7 +3,7 @@ import HalftoneReveal from './components/reactbits/HalftoneReveal';
 import SplitText from './components/reactbits/SplitText';
 import CountUp from './components/reactbits/CountUp';
 import VariableProximity from './components/reactbits/VariableProximity';
-import SpecularButton from './components/reactbits/SpecularButton';
+import PortfolioActionButton from './components/PortfolioActionButton';
 import profilePhoto from '../imageprofileportfolio.png';
 
 const pendingNavigation = ['About', 'Projects', 'Experience', 'Contact'];
@@ -97,12 +97,12 @@ export default function App() {
           </div>
 
           <div className="actions" aria-label="Portfolio actions">
-            <SpecularButton className="action-button action-primary" size="md" radius={14} tint="#111111" tintOpacity={1} textColor="#ffffff" lineColor="#ffffff" baseColor="#1b1b1b" intensity={0.35} idleIntensity={0} glow={0} autoAnimate={false} onClick={() => setNotice('Resume file has not been added yet.')}>
+            <PortfolioActionButton variant="primary" reducedMotion={reduced} onClick={() => setNotice('Resume file has not been added yet.')}>
               <DocumentIcon /><span>View Resume</span><span className="action-trailing" aria-hidden="true">↗</span>
-            </SpecularButton>
-            <SpecularButton className="action-button action-secondary" size="md" radius={14} tint="#ffffff" tintOpacity={1} textColor="#111111" lineColor="#111111" baseColor="#ffffff" intensity={0.24} idleIntensity={0} glow={0} autoAnimate={false} onClick={() => setNotice('Contact address has not been added yet.')}>
+            </PortfolioActionButton>
+            <PortfolioActionButton variant="secondary" reducedMotion={reduced} onClick={() => setNotice('Contact address has not been added yet.')}>
               <MailIcon /><span>Contact Me</span>
-            </SpecularButton>
+            </PortfolioActionButton>
           </div>
           <p className="action-notice" role="status" aria-live="polite">{notice}</p>
 
