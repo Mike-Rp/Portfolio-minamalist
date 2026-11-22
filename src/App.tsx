@@ -53,7 +53,7 @@ function ProfilePhoto({ reduced }: { reduced: boolean }) {
   return (
     <div className="profile-photo">
       <img src={profilePhoto} alt="Mikhail Respicio taking a mirror portrait" width="307" height="291" fetchPriority="high" />
-      {!reduced && <HalftoneReveal src={profilePhoto} fit="cover" mode="color" cellSize={3.5} dotScale={0.8} revealRadius={95} softness={0.8} linger={0.45} reverse intro={false} clickBurst={false} className="photo-effect" />}
+      {!reduced && <HalftoneReveal src={profilePhoto} fit="cover" mode="mono" shape="dot" cellSize={4.5} dotScale={0.9} inkColor="#f8f8f8" paperColor="#080808" contrast={1.05} brightness={0} invert revealRadius={105} softness={0.72} linger={0.65} intro={false} clickBurst={false} className="photo-effect" />}
     </div>
   );
 }
