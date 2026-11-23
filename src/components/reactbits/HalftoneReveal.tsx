@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, type CSSProperties } from 'react';
 
+import './HalftoneReveal.css';
+
 export type HalftoneRevealMode = 'mono' | 'duotone' | 'color';
 
 export type HalftoneRevealShape = 'dot' | 'ellipse' | 'square' | 'diamond' | 'line' | 'cross';
@@ -14,6 +16,7 @@ export interface HalftoneRevealProps {
   cellSize?: number;
   angle?: number;
   dotScale?: number;
+  halftoneStrength?: number;
   inkColor?: string;
   accentColor?: string;
   paperColor?: string;
@@ -40,6 +43,7 @@ type Settings = {
   cellSize: number;
   angle: number;
   dotScale: number;
+  halftoneStrength: number;
   inkColor: string;
   accentColor: string;
   paperColor: string;
@@ -108,6 +112,7 @@ uniform float uShape;
 uniform float uCell;
 uniform float uAngle;
 uniform float uScale;
+uniform float uHalftoneStrength;
 uniform vec3 uInk;
 uniform vec3 uAccent;
 uniform vec3 uPaper;
@@ -326,6 +331,13 @@ void main() {
     print = min(uPaper + RED * kr + GREEN * kg + BLUE * kb, vec3(1.0));
   }
 
+  vec4 sharp = photo(p, 0.0, 0.0);
+  if (uMode < 0.5 && uHalftoneStrength < 1.0) {
+    float gray = dot(sharp.rgb, LUMA);
+    vec3 grayscalePhoto = mix(uPaper, vec3(gray), sharp.a);
+    print = mix(grayscalePhoto, print, uHalftoneStrength);
+  }
+
   vec2 maskUv = vec2(p.x / uView.x, 1.0 - p.y / uView.y);
   float shown = max(texture(uMask, maskUv).r, burst(p));
   shown = mix(shown, 1.0 - shown, uReverse);
@@ -335,7 +347,6 @@ void main() {
   float r = reach(1.0) * 1.08 * shown;
   float w = max(fwidth(d), 0.0001) * 0.75;
   float k = smoothstep(r + w, r - w, d) * clamp(r / (w * 2.0), 0.0, 1.0);
-  vec4 sharp = photo(p, 0.0, 0.0);
   vec3 real = mix(uPaper, sharp.rgb, sharp.a);
   outColor = vec4(mix(print, real, k), 1.0);
 }`;
@@ -424,6 +435,7 @@ const HalftoneReveal = ({
   cellSize = 6,
   angle = 45,
   dotScale = 1,
+  halftoneStrength = 1,
   inkColor = '#120f17',
   accentColor = '#ff4f2a',
   paperColor = '#ffffff',
@@ -452,6 +464,7 @@ const HalftoneReveal = ({
     cellSize: clamp(cellSize, 2, 80),
     angle,
     dotScale: clamp(dotScale, 0.2, 2),
+    halftoneStrength: clamp(halftoneStrength, 0, 1),
     inkColor: String(inkColor),
     accentColor: String(accentColor),
     paperColor: String(paperColor),
@@ -521,6 +534,7 @@ const HalftoneReveal = ({
       'uCell',
       'uAngle',
       'uScale',
+      'uHalftoneStrength',
       'uInk',
       'uAccent',
       'uPaper',
@@ -693,6 +707,7 @@ const HalftoneReveal = ({
       gl.uniform1f(viewUniforms.uCell, s.cellSize);
       gl.uniform1f(viewUniforms.uAngle, (s.angle * Math.PI) / 180);
       gl.uniform1f(viewUniforms.uScale, s.dotScale);
+      gl.uniform1f(viewUniforms.uHalftoneStrength, s.halftoneStrength);
       gl.uniform3fv(viewUniforms.uInk, toRgb(s.inkColor));
       gl.uniform3fv(viewUniforms.uAccent, toRgb(s.accentColor));
       gl.uniform3fv(viewUniforms.uPaper, toRgb(s.paperColor));
@@ -882,12 +897,8 @@ const HalftoneReveal = ({
   });
 
   return (
-    <div
-      ref={containerRef}
-      className={['relative h-full w-full overflow-hidden', className].filter(Boolean).join(' ')}
-      style={style}
-    >
-      <canvas ref={canvasRef} className="absolute inset-0 block h-full w-full" style={{ opacity: 0 }} aria-hidden="true" />
+    <div ref={containerRef} className={`halftone-reveal${className ? ` ${className}` : ''}`} style={style}>
+      <canvas ref={canvasRef} className="halftone-reveal-canvas" style={{ opacity: 0 }} aria-hidden="true" />
     </div>
   );
 };
