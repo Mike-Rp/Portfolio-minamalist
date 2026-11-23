@@ -9,8 +9,33 @@ import AnimatedList from './components/reactbits/AnimatedList';
 import HomepageSections from './components/HomepageSections';
 import profilePhoto from '../imageprofileportfolio.png';
 
-const portfolioNavigation = ['Home', 'About me', 'Projects', 'Experience', 'Stack', 'Certifications'];
-const connectNavigation = ['GitHub', 'LinkedIn'];
+type SidebarItem = { label: string; href?: string; icon: string; external?: boolean };
+const portfolioNavigation: SidebarItem[] = [
+  { label: 'Home', href: '#home', icon: 'home' },
+  { label: 'About me', icon: 'about' },
+  { label: 'Projects', href: '#projects-title', icon: 'projects' },
+  { label: 'Experience', href: '#experience-title', icon: 'experience' },
+  { label: 'Stack', href: '#stack-title', icon: 'stack' },
+  { label: 'Certifications', icon: 'certifications' },
+];
+const connectNavigation: SidebarItem[] = [
+  { label: 'GitHub', href: 'https://github.com/Mike-Rp', icon: 'github', external: true },
+  { label: 'LinkedIn', icon: 'linkedin' },
+];
+
+function SidebarIcon({ name }: { name: string }) {
+  const paths: Record<string, React.ReactNode> = {
+    home: <><path d="m2.5 8 5.5-5 5.5 5v5.5H2.5z" /><path d="M6 13.5V9h4v4.5" /></>,
+    about: <><circle cx="8" cy="5" r="2.25" /><path d="M3.25 13.25c.5-2.5 2.1-3.75 4.75-3.75s4.25 1.25 4.75 3.75" /></>,
+    projects: <><rect x="2" y="2.5" width="5" height="5" rx=".7" /><rect x="9" y="2.5" width="5" height="5" rx=".7" /><rect x="2" y="9.5" width="5" height="4" rx=".7" /><rect x="9" y="9.5" width="5" height="4" rx=".7" /></>,
+    experience: <><rect x="2" y="5" width="12" height="8" rx="1" /><path d="M5.5 5V3.5h5V5M2 8.5c4 2 8 2 12 0" /></>,
+    stack: <><path d="m8 2 6 3.2-6 3.2-6-3.2zM2 8l6 3.2L14 8M2 10.8 8 14l6-3.2" /></>,
+    certifications: <><circle cx="8" cy="6" r="3.5" /><path d="m5.7 9-1 5 3.3-1.8 3.3 1.8-1-5" /></>,
+    github: <><path d="M5.2 12.8c-2.1.5-2.1-1.1-3.1-1.4m9.8 1.4v-2.1c0-.7.1-1.1.5-1.5 1.5-.2 2.6-.9 2.6-3.3 0-.8-.3-1.5-.8-2.1.1-.5.1-1.2-.2-1.8 0 0-.7-.2-2.2.8a8.4 8.4 0 0 0-4.1 0c-1.5-1-2.2-.8-2.2-.8-.3.6-.3 1.3-.2 1.8-.5.6-.8 1.3-.8 2.1 0 2.4 1.1 3.1 2.6 3.3.4.4.5.8.5 1.5v2.1" /></>,
+    linkedin: <><rect x="2" y="2" width="12" height="12" rx="1.5" /><path d="M5 7v4M5 5v.1M8 11V7m0 1.2c.5-.8 1-1.2 1.9-1.2 1.3 0 1.7.9 1.7 2.2V11" /></>,
+  };
+  return <svg className="sidebar-nav-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[name]}</svg>;
+}
 
 function useReducedMotion() {
   const [reduced, setReduced] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
@@ -35,6 +60,7 @@ function MailIcon() {
 
 function Sidebar({ onContact }: { onContact: () => void }) {
   const [open, setOpen] = useState(false);
+  const [activeHref, setActiveHref] = useState(() => window.location.hash || '#home');
   const triggerRef = useRef<HTMLButtonElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
 
@@ -51,12 +77,22 @@ function Sidebar({ onContact }: { onContact: () => void }) {
     return () => window.removeEventListener('keydown', closeOnEscape);
   }, [open]);
 
-  const navigationGroup = (label: string, items: string[]) => (
+  useEffect(() => {
+    const update = () => setActiveHref(window.location.hash || '#home');
+    window.addEventListener('hashchange', update);
+    return () => window.removeEventListener('hashchange', update);
+  }, []);
+
+  const navigationGroup = (label: string, items: SidebarItem[]) => (
     <div className="sidebar-nav-group">
       <p className="sidebar-group-label">{label}</p>
-      <AnimatedList items={items} frame={false} showGradients={false} displayScrollbar={false} enableArrowNavigation={false} selectOnHover={false} animation="slide" animateOnce stagger={0.035} width="100%" maxHeight="none" gap={2} className="sidebar-list" renderItem={(item) => item === 'Home'
-        ? <a className="nav-item is-current" href="#home" aria-current="page" onClick={() => setOpen(false)}>Home</a>
-        : <span className="nav-item is-pending" aria-disabled="true" title={`${item} is planned for a future phase`}>{String(item)}</span>} />
+      <AnimatedList items={items.map(item => item.label)} selectedIndex={items.findIndex(item => item.href === activeHref)} selectOnClick={false} frame={false} showGradients={false} displayScrollbar={false} enableArrowNavigation={false} selectOnHover={false} animation="slide" animateOnce stagger={0.035} width="100%" maxHeight="none" gap={2} className="sidebar-list" renderItem={(_, index) => {
+        const item = items[index];
+        const content = <><SidebarIcon name={item.icon} /><span>{item.label}</span></>;
+        return item.href
+          ? <a className={`nav-item${activeHref === item.href ? ' is-current' : ''}`} href={item.href} aria-current={activeHref === item.href ? 'location' : undefined} target={item.external ? '_blank' : undefined} rel={item.external ? 'noopener noreferrer' : undefined} onClick={() => { if (!item.external) setActiveHref(item.href!); setOpen(false); }}>{content}</a>
+          : <span className="nav-item is-pending" aria-disabled="true" title={`${item.label} is planned for a future phase`}>{content}</span>;
+      }} />
     </div>
   );
 
@@ -73,7 +109,7 @@ function Sidebar({ onContact }: { onContact: () => void }) {
             <a className="sidebar-brand" href="#home" onClick={() => setOpen(false)}>Mikhail Respicio<span className="brand-dot">.</span></a>
             <button ref={closeRef} className="sidebar-close" type="button" aria-label="Close navigation" onClick={() => { setOpen(false); triggerRef.current?.focus(); }}>×</button>
           </div>
-          <button className="sidebar-contact" type="button" onClick={() => { onContact(); setOpen(false); }}><span>Contact</span><span aria-hidden="true">↗</span></button>
+          <button className="sidebar-contact" type="button" onClick={() => { onContact(); setOpen(false); }}><MailIcon /><span>Contact</span><span className="sidebar-contact-arrow" aria-hidden="true">↗</span></button>
           <nav id="primary-navigation" className="sidebar-nav" aria-label="Sidebar navigation">
             {navigationGroup('Portfolio', portfolioNavigation)}
             {navigationGroup('Connect', connectNavigation)}

@@ -25,6 +25,8 @@ interface AnimatedListProps {
   onItemSelect?: (item: AnimatedListItem, index: number) => void;
   renderItem?: (item: AnimatedListItem, index: number, isSelected: boolean) => ReactNode;
   initialSelectedIndex?: number;
+  selectedIndex?: number;
+  selectOnClick?: boolean;
   selectOnHover?: boolean;
   enableArrowNavigation?: boolean;
   loop?: boolean;
@@ -123,6 +125,8 @@ const AnimatedList = ({
   onItemSelect,
   renderItem,
   initialSelectedIndex = -1,
+  selectedIndex,
+  selectOnClick = true,
   selectOnHover = true,
   enableArrowNavigation = true,
   loop = false,
@@ -152,7 +156,10 @@ const AnimatedList = ({
   const engineRef = useRef<Engine | null>(null);
   const keyboardRef = useRef(false);
   const navigatingRef = useRef(false);
-  const [selected, setSelected] = useState(initialSelectedIndex);
+  const [selected, setSelected] = useState(selectedIndex ?? initialSelectedIndex);
+  useEffect(() => {
+    if (selectedIndex !== undefined) setSelected(selectedIndex);
+  }, [selectedIndex]);
   const baseId = useId();
   const settings = {
     items,
@@ -534,7 +541,7 @@ const AnimatedList = ({
                 data-index={index}
                 data-selected={isSelected ? '' : undefined}
                 onPointerEnter={selectOnHover ? () => hover(index) : undefined}
-                onClick={() => choose(item, index)}
+                onClick={selectOnClick ? () => choose(item, index) : undefined}
               >
                 {renderItem ? (
                   renderItem(item, index, isSelected)
