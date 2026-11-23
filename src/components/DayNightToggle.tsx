@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { switchThemeWithGrain } from './themeGrainTransition';
 import './DayNightToggle.css';
 
 type Theme = 'light' | 'dark';
@@ -6,6 +7,7 @@ const currentTheme = (): Theme => document.documentElement.dataset.theme === 'da
 
 export default function DayNightToggle() {
   const [theme, setTheme] = useState<Theme>(currentTheme);
+  const transitioning = useRef(false);
 
   useEffect(() => {
     const sync = () => setTheme(currentTheme());
@@ -14,11 +16,20 @@ export default function DayNightToggle() {
   }, []);
 
   function toggleTheme() {
+    if (transitioning.current) return;
     const next: Theme = currentTheme() === 'dark' ? 'light' : 'dark';
-    document.documentElement.dataset.theme = next;
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', next === 'dark' ? '#111216' : '#ffffff');
-    try { localStorage.setItem('portfolio-theme', next); } catch { /* The button still works without storage. */ }
-    setTheme(next);
+    const apply = () => {
+      document.documentElement.dataset.theme = next;
+      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', next === 'dark' ? '#111216' : '#ffffff');
+      try { localStorage.setItem('portfolio-theme', next); } catch { /* The button still works without storage. */ }
+      setTheme(next);
+    };
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      apply();
+      return;
+    }
+    transitioning.current = true;
+    void switchThemeWithGrain(apply).finally(() => { transitioning.current = false; });
   }
 
   return <button className="theme-toggle" type="button" aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`} aria-pressed={theme === 'dark'} onClick={toggleTheme}>
