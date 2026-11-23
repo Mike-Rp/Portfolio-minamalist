@@ -17,6 +17,8 @@ export interface HalftoneRevealProps {
   angle?: number;
   dotScale?: number;
   halftoneStrength?: number;
+  fullReveal?: boolean;
+  suppressHover?: boolean;
   inkColor?: string;
   accentColor?: string;
   paperColor?: string;
@@ -44,6 +46,8 @@ type Settings = {
   angle: number;
   dotScale: number;
   halftoneStrength: number;
+  fullReveal: boolean;
+  suppressHover: boolean;
   inkColor: string;
   accentColor: string;
   paperColor: string;
@@ -113,6 +117,8 @@ uniform float uCell;
 uniform float uAngle;
 uniform float uScale;
 uniform float uHalftoneStrength;
+uniform float uFullReveal;
+uniform float uSuppressHover;
 uniform vec3 uInk;
 uniform vec3 uAccent;
 uniform vec3 uPaper;
@@ -348,7 +354,7 @@ void main() {
   float w = max(fwidth(d), 0.0001) * 0.75;
   float k = smoothstep(r + w, r - w, d) * clamp(r / (w * 2.0), 0.0, 1.0);
   vec3 real = mix(uPaper, sharp.rgb, sharp.a);
-  outColor = vec4(mix(print, real, k), 1.0);
+  outColor = vec4(mix(print, real, max(k * (1.0 - uSuppressHover), uFullReveal)), 1.0);
 }`;
 
 const MODES: Record<string, number> = { mono: 0, duotone: 1, color: 2 };
@@ -436,6 +442,8 @@ const HalftoneReveal = ({
   angle = 45,
   dotScale = 1,
   halftoneStrength = 1,
+  fullReveal = false,
+  suppressHover = false,
   inkColor = '#120f17',
   accentColor = '#ff4f2a',
   paperColor = '#ffffff',
@@ -465,6 +473,8 @@ const HalftoneReveal = ({
     angle,
     dotScale: clamp(dotScale, 0.2, 2),
     halftoneStrength: clamp(halftoneStrength, 0, 1),
+    fullReveal,
+    suppressHover,
     inkColor: String(inkColor),
     accentColor: String(accentColor),
     paperColor: String(paperColor),
@@ -535,6 +545,8 @@ const HalftoneReveal = ({
       'uAngle',
       'uScale',
       'uHalftoneStrength',
+      'uFullReveal',
+      'uSuppressHover',
       'uInk',
       'uAccent',
       'uPaper',
@@ -609,7 +621,8 @@ const HalftoneReveal = ({
       introStart: 0,
       presence: 0,
       drift: 0,
-      trailUntil: 0
+      trailUntil: 0,
+      fullReveal: fullReveal ? 1 : 0
     };
     let raf = 0;
     let last = 0;
@@ -708,6 +721,8 @@ const HalftoneReveal = ({
       gl.uniform1f(viewUniforms.uAngle, (s.angle * Math.PI) / 180);
       gl.uniform1f(viewUniforms.uScale, s.dotScale);
       gl.uniform1f(viewUniforms.uHalftoneStrength, s.halftoneStrength);
+      gl.uniform1f(viewUniforms.uFullReveal, state.fullReveal);
+      gl.uniform1f(viewUniforms.uSuppressHover, s.suppressHover ? 1 : 0);
       gl.uniform3fv(viewUniforms.uInk, toRgb(s.inkColor));
       gl.uniform3fv(viewUniforms.uAccent, toRgb(s.accentColor));
       gl.uniform3fv(viewUniforms.uPaper, toRgb(s.paperColor));
@@ -735,6 +750,9 @@ const HalftoneReveal = ({
       const s = settingsRef.current;
       const dt = last ? Math.min(0.05, Math.max(0, (now - last) / 1000)) : 1 / 60;
       last = now;
+      const revealTarget = s.fullReveal ? 1 : 0;
+      state.fullReveal += (revealTarget - state.fullReveal) * (reduce ? 1 : 1 - Math.exp(-dt / 0.1));
+      if (Math.abs(revealTarget - state.fullReveal) < 0.002) state.fullReveal = revealTarget;
 
       const wandering = s.wander && !reduce;
       let targetX = pointer.x;
@@ -780,7 +798,7 @@ const HalftoneReveal = ({
       const intro = drawView(s, now);
 
       const busy =
-        engaged || state.presence > 0.002 || bursts.length > 0 || now < state.trailUntil || (state.image && intro < 1);
+        engaged || state.presence > 0.002 || bursts.length > 0 || now < state.trailUntil || (state.image && intro < 1) || state.fullReveal !== revealTarget;
       if (busy) raf = requestAnimationFrame(frame);
       else last = 0;
     };
@@ -822,6 +840,7 @@ const HalftoneReveal = ({
       pointer.placed = true;
     };
     const onMove = (event: PointerEvent) => {
+      if (event.pointerType === 'touch') return;
       locatePointer(event);
       if (!pointer.inside) {
         pointer.inside = true;
@@ -834,6 +853,7 @@ const HalftoneReveal = ({
       wake();
     };
     const onDown = (event: PointerEvent) => {
+      if (event.pointerType === 'touch') return;
       onMove(event);
       if (!settingsRef.current.clickBurst || (event.pointerType === 'mouse' && event.button !== 0)) return;
       bursts.push({ x: pointer.x, y: pointer.y, start: performance.now() });

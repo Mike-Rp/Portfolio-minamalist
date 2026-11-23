@@ -4,6 +4,7 @@ import SplitText from './components/reactbits/SplitText';
 import CountUp from './components/reactbits/CountUp';
 import VariableProximity from './components/reactbits/VariableProximity';
 import PortfolioActionButton from './components/PortfolioActionButton';
+import DayNightToggle from './components/DayNightToggle';
 import profilePhoto from '../imageprofileportfolio.png';
 
 const pendingNavigation = ['About', 'Projects', 'Experience', 'Contact'];
@@ -50,11 +51,13 @@ function Sidebar() {
 }
 
 function ProfilePhoto({ reduced }: { reduced: boolean }) {
+  const [active, setActive] = useState(false);
+  const [suppressHover, setSuppressHover] = useState(false);
   return (
-    <div className="profile-photo">
+    <button type="button" className={`profile-photo${active ? ' is-active' : ''}`} aria-label="Show profile photo in color" aria-pressed={active} onPointerMove={event => { if (event.pointerType === 'mouse') setSuppressHover(false); }} onClick={() => { setSuppressHover(active); setActive(value => !value); }}>
       <img src={profilePhoto} alt="Mikhail Respicio taking a mirror portrait" width="307" height="291" fetchPriority="high" />
-      {!reduced && <HalftoneReveal src={profilePhoto} fit="cover" mode="mono" shape="dot" cellSize={4} dotScale={0.88} halftoneStrength={0.12} inkColor="#111111" paperColor="#f5f5f5" contrast={1.2} brightness={0.12} invert={false} roughness={0} misregistration={0} revealRadius={150} softness={0.38} linger={0.9} reverse={false} wander={false} clickBurst={false} intro className="photo-effect" />}
-    </div>
+      {!reduced && <HalftoneReveal src={profilePhoto} fullReveal={active} suppressHover={suppressHover} fit="cover" mode="mono" shape="dot" cellSize={4} dotScale={0.88} halftoneStrength={0.12} inkColor="#111111" paperColor="#f5f5f5" contrast={1.2} brightness={0.12} invert={false} roughness={0} misregistration={0} revealRadius={150} softness={0.38} linger={0.9} reverse={false} wander={false} clickBurst={false} intro className="photo-effect" />}
+    </button>
   );
 }
 
@@ -80,6 +83,7 @@ export default function App() {
       <Sidebar />
       <main id="home" className="main-content">
         <section className="hero" aria-labelledby="hero-title">
+          <div className="hero-toolbar"><DayNightToggle /></div>
           <div className="profile-introduction">
             <ProfilePhoto reduced={reduced} />
             <div className="intro-copy" ref={biographyRef}>

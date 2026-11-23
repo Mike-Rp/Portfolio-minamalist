@@ -4,6 +4,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#ffffff" />
+    <script>
+      (() => {
+        let saved;
+        try { saved = localStorage.getItem('portfolio-theme'); } catch { /* Storage may be unavailable. */ }
+        const theme = saved === 'light' || saved === 'dark'
+          ? saved
+          : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.dataset.theme = theme;
+        document.querySelector('meta[name="theme-color"]').content = theme === 'dark' ? '#111216' : '#ffffff';
+      })();
+    </script>
     <meta name="description" content="Mikhail Respicio — Software Developer, UI/UX Designer, and Graphic Designer." />
     <title>Mikhail Respicio — Portfolio</title>
   </head>
