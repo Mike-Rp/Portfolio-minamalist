@@ -5,9 +5,12 @@ import CountUp from './components/reactbits/CountUp';
 import VariableProximity from './components/reactbits/VariableProximity';
 import PortfolioActionButton from './components/PortfolioActionButton';
 import DayNightToggle from './components/DayNightToggle';
+import AnimatedList from './components/reactbits/AnimatedList';
+import HomepageSections from './components/HomepageSections';
 import profilePhoto from '../imageprofileportfolio.png';
 
-const pendingNavigation = ['About', 'Projects', 'Experience', 'Contact'];
+const portfolioNavigation = ['Home', 'About me', 'Projects', 'Experience', 'Stack', 'Certifications'];
+const connectNavigation = ['GitHub', 'LinkedIn'];
 
 function useReducedMotion() {
   const [reduced, setReduced] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
@@ -30,23 +33,55 @@ function MailIcon() {
   return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="1.5" /><path d="m3 6 9 7 9-7" strokeLinejoin="round" /></svg>;
 }
 
-function Sidebar() {
+function Sidebar({ onContact }: { onContact: () => void }) {
   const [open, setOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    closeRef.current?.focus();
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setOpen(false);
+        triggerRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
+  }, [open]);
+
+  const navigationGroup = (label: string, items: string[]) => (
+    <div className="sidebar-nav-group">
+      <p className="sidebar-group-label">{label}</p>
+      <AnimatedList items={items} frame={false} showGradients={false} displayScrollbar={false} enableArrowNavigation={false} selectOnHover={false} animation="slide" animateOnce stagger={0.035} width="100%" maxHeight="none" gap={2} className="sidebar-list" renderItem={(item) => item === 'Home'
+        ? <a className="nav-item is-current" href="#home" aria-current="page" onClick={() => setOpen(false)}>Home</a>
+        : <span className="nav-item is-pending" aria-disabled="true" title={`${item} is planned for a future phase`}>{String(item)}</span>} />
+    </div>
+  );
 
   return (
-    <aside className="sidebar">
-      <div className="sidebar-heading">
+    <>
+      <div className="mobile-sidebar-bar">
+        <button ref={triggerRef} className="menu-toggle" type="button" aria-label="Open navigation" aria-expanded={open} aria-controls="primary-navigation" onClick={() => setOpen(true)}><span /><span /><span /></button>
         <a className="sidebar-brand" href="#home" onClick={() => setOpen(false)}>Mikhail Respicio<span className="brand-dot">.</span></a>
-        <button className="menu-toggle" type="button" aria-label={open ? 'Close navigation' : 'Open navigation'} aria-expanded={open} aria-controls="primary-navigation" onClick={() => setOpen(value => !value)}>
-          <span /><span /><span />
-        </button>
       </div>
-      <nav id="primary-navigation" className={`sidebar-nav${open ? ' is-open' : ''}`} aria-label="Primary navigation">
-        <a className="nav-item is-current" href="#home" aria-current="page" onClick={() => setOpen(false)}>Home</a>
-        {pendingNavigation.map(item => <span className="nav-item is-pending" key={item} title={`${item} is planned for a future phase`}>{item}</span>)}
-      </nav>
-      <p className="sidebar-caption">Portfolio · 2026</p>
-    </aside>
+      {open && <button className="sidebar-backdrop" type="button" tabIndex={-1} aria-label="Close navigation" onClick={() => setOpen(false)} />}
+      <aside className={`sidebar${open ? ' is-open' : ''}`}>
+        <div className="sidebar-panel">
+          <div className="sidebar-heading">
+            <a className="sidebar-brand" href="#home" onClick={() => setOpen(false)}>Mikhail Respicio<span className="brand-dot">.</span></a>
+            <button ref={closeRef} className="sidebar-close" type="button" aria-label="Close navigation" onClick={() => { setOpen(false); triggerRef.current?.focus(); }}>×</button>
+          </div>
+          <button className="sidebar-contact" type="button" onClick={() => { onContact(); setOpen(false); }}><span>Contact</span><span aria-hidden="true">↗</span></button>
+          <nav id="primary-navigation" className="sidebar-nav" aria-label="Sidebar navigation">
+            {navigationGroup('Portfolio', portfolioNavigation)}
+            {navigationGroup('Connect', connectNavigation)}
+          </nav>
+          <div className="sidebar-foot"><p className="sidebar-caption">© 2026 Mikhail Respicio</p><DayNightToggle /></div>
+        </div>
+      </aside>
+    </>
   );
 }
 
@@ -80,10 +115,9 @@ export default function App() {
 
   return (
     <div className="site-shell">
-      <Sidebar />
+      <Sidebar onContact={() => setNotice('Contact address has not been added yet.')} />
       <main id="home" className="main-content">
         <section className="hero" aria-labelledby="hero-title">
-          <div className="hero-toolbar"><DayNightToggle /></div>
           <div className="profile-introduction">
             <ProfilePhoto reduced={reduced} />
             <div className="intro-copy" ref={biographyRef}>
@@ -116,6 +150,7 @@ export default function App() {
             <Statistic value={4} suffix="" label="Featured Projects" reduced={reduced} />
           </div>
         </section>
+        <HomepageSections />
       </main>
     </div>
   );

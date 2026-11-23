@@ -6,13 +6,23 @@
     <meta name="theme-color" content="#ffffff" />
     <script>
       (() => {
+        const preference = matchMedia('(prefers-color-scheme: dark)');
         let saved;
         try { saved = localStorage.getItem('portfolio-theme'); } catch { /* Storage may be unavailable. */ }
         const theme = saved === 'light' || saved === 'dark'
           ? saved
-          : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          : (preference.matches ? 'dark' : 'light');
         document.documentElement.dataset.theme = theme;
         document.querySelector('meta[name="theme-color"]').content = theme === 'dark' ? '#111216' : '#ffffff';
+        preference.addEventListener('change', () => {
+          let manual;
+          try { manual = localStorage.getItem('portfolio-theme'); } catch { /* Follow the system without storage. */ }
+          if (manual === 'light' || manual === 'dark') return;
+          const next = preference.matches ? 'dark' : 'light';
+          document.documentElement.dataset.theme = next;
+          document.querySelector('meta[name="theme-color"]').content = next === 'dark' ? '#111216' : '#ffffff';
+          window.dispatchEvent(new Event('portfolio-theme-change'));
+        });
       })();
     </script>
     <meta name="description" content="Mikhail Respicio — Software Developer, UI/UX Designer, and Graphic Designer." />
