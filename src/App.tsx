@@ -58,11 +58,17 @@ function MailIcon() {
   return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="1.5" /><path d="m3 6 9 7 9-7" strokeLinejoin="round" /></svg>;
 }
 
-function Sidebar({ onContact }: { onContact: () => void }) {
+function Sidebar({ onContact, collapsed, onToggleCollapse }: { onContact: () => void; collapsed: boolean; onToggleCollapse: () => void }) {
   const [open, setOpen] = useState(false);
   const [activeHref, setActiveHref] = useState(() => window.location.hash || '#home');
   const triggerRef = useRef<HTMLButtonElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
+  const sidebarRef = useRef<HTMLElement>(null);
+  const closeMobileNavigation = () => {
+    if (!open) return;
+    setOpen(false);
+    requestAnimationFrame(() => triggerRef.current?.focus());
+  };
 
   useEffect(() => {
     if (!open) return;
@@ -71,6 +77,12 @@ function Sidebar({ onContact }: { onContact: () => void }) {
       if (event.key === 'Escape') {
         setOpen(false);
         triggerRef.current?.focus();
+      } else if (event.key === 'Tab') {
+        const controls = [...(sidebarRef.current?.querySelectorAll<HTMLElement>('a[href], button:not([disabled])') ?? [])];
+        const first = controls[0];
+        const last = controls[controls.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
       }
     };
     window.addEventListener('keydown', closeOnEscape);
@@ -88,9 +100,9 @@ function Sidebar({ onContact }: { onContact: () => void }) {
       <p className="sidebar-group-label">{label}</p>
       <AnimatedList items={items.map(item => item.label)} selectedIndex={items.findIndex(item => item.href === activeHref)} selectOnClick={false} frame={false} showGradients={false} displayScrollbar={false} enableArrowNavigation={false} selectOnHover={false} animation="slide" animateOnce stagger={0.035} width="100%" maxHeight="none" gap={2} className="sidebar-list" renderItem={(_, index) => {
         const item = items[index];
-        const content = <><SidebarIcon name={item.icon} /><span>{item.label}</span></>;
+        const content = <><SidebarIcon name={item.icon} /><span className="sidebar-item-label">{item.label}</span></>;
         return item.href
-          ? <a className={`nav-item${activeHref === item.href ? ' is-current' : ''}`} href={item.href} aria-current={activeHref === item.href ? 'location' : undefined} target={item.external ? '_blank' : undefined} rel={item.external ? 'noopener noreferrer' : undefined} onClick={() => { if (!item.external) setActiveHref(item.href!); setOpen(false); }}>{content}</a>
+          ? <a className={`nav-item${activeHref === item.href ? ' is-current' : ''}`} href={item.href} title={collapsed ? item.label : undefined} aria-label={item.label} aria-current={activeHref === item.href ? 'location' : undefined} target={item.external ? '_blank' : undefined} rel={item.external ? 'noopener noreferrer' : undefined} onClick={() => { if (!item.external) setActiveHref(item.href!); closeMobileNavigation(); }}>{content}</a>
           : <span className="nav-item is-pending" aria-disabled="true" title={`${item.label} is planned for a future phase`}>{content}</span>;
       }} />
     </div>
@@ -100,16 +112,17 @@ function Sidebar({ onContact }: { onContact: () => void }) {
     <>
       <div className="mobile-sidebar-bar">
         <button ref={triggerRef} className="menu-toggle" type="button" aria-label="Open navigation" aria-expanded={open} aria-controls="primary-navigation" onClick={() => setOpen(true)}><span /><span /><span /></button>
-        <a className="sidebar-brand" href="#home" onClick={() => setOpen(false)}>Mikhail Respicio<span className="brand-dot">.</span></a>
+        <a className="sidebar-brand" href="#home" onClick={closeMobileNavigation}>Mikhail Respicio<span className="brand-dot">.</span></a>
       </div>
-      {open && <button className="sidebar-backdrop" type="button" tabIndex={-1} aria-label="Close navigation" onClick={() => setOpen(false)} />}
-      <aside className={`sidebar${open ? ' is-open' : ''}`}>
+      {open && <button className="sidebar-backdrop" type="button" tabIndex={-1} aria-label="Close navigation backdrop" onClick={closeMobileNavigation} />}
+      <aside ref={sidebarRef} className={`sidebar${open ? ' is-open' : ''}${collapsed ? ' is-collapsed' : ''}`}>
         <div className="sidebar-panel">
           <div className="sidebar-heading">
-            <a className="sidebar-brand" href="#home" onClick={() => setOpen(false)}>Mikhail Respicio<span className="brand-dot">.</span></a>
+            <a className="sidebar-brand" href="#home" onClick={closeMobileNavigation}>Mikhail Respicio<span className="brand-dot">.</span></a>
+            <button className="sidebar-collapse" type="button" aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} aria-expanded={!collapsed} title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} onClick={onToggleCollapse}><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="1.75" y="2.25" width="12.5" height="11.5" rx="2" /><path d="M6 2.5v11M9.5 6.25 7.75 8l1.75 1.75" /></svg></button>
             <button ref={closeRef} className="sidebar-close" type="button" aria-label="Close navigation" onClick={() => { setOpen(false); triggerRef.current?.focus(); }}>×</button>
           </div>
-          <button className="sidebar-contact" type="button" onClick={() => { onContact(); setOpen(false); }}><MailIcon /><span>Contact</span><span className="sidebar-contact-arrow" aria-hidden="true">↗</span></button>
+          <button className="sidebar-contact" type="button" aria-label="Contact" title={collapsed ? 'Contact' : undefined} onClick={() => { onContact(); closeMobileNavigation(); }}><MailIcon /><span>Contact</span><span className="sidebar-contact-arrow" aria-hidden="true">↗</span></button>
           <nav id="primary-navigation" className="sidebar-nav" aria-label="Sidebar navigation">
             {navigationGroup('Portfolio', portfolioNavigation)}
             {navigationGroup('Connect', connectNavigation)}
@@ -148,10 +161,11 @@ export default function App() {
   const reduced = useReducedMotion();
   const biographyRef = useRef<HTMLDivElement>(null);
   const [notice, setNotice] = useState('');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   return (
-    <div className="site-shell">
-      <Sidebar onContact={() => setNotice('Contact address has not been added yet.')} />
+    <div className={`site-shell${sidebarCollapsed ? ' sidebar-is-collapsed' : ''}`}>
+      <Sidebar onContact={() => setNotice('Contact address has not been added yet.')} collapsed={sidebarCollapsed} onToggleCollapse={() => setSidebarCollapsed(value => !value)} />
       <main id="home" className="main-content">
         <section className="hero" aria-labelledby="hero-title">
           <div className="profile-introduction">
