@@ -145,15 +145,21 @@ a { color: inherit; }
 .intro-copy { min-width: 0; padding-top: 4px; }
 h1 { margin: 0; font-size: var(--type-hero); line-height: 1.15; letter-spacing: -.025em; font-weight: 600; white-space: nowrap; }
 .roles { margin: 7px 0 0; color: var(--color-muted); font-size: 16px; font-weight: 400; line-height: 1.25; letter-spacing: -.01em; }
-.biography { margin-top: 24px; font-size: var(--type-body); line-height: 1.6; letter-spacing: -.008em; }
+.biography { margin-top: 24px; font-size: var(--type-body); font-weight: 500; line-height: 1.65; letter-spacing: -.008em; }
 .biography p { margin: 0; }
 .biography p + p { margin-top: 18px; }
-.biography strong { font-weight: 600; }
+.biography strong { font-weight: 650; }
 .biography-tool, .biography-ai-tool { display: inline-flex; align-items: baseline; gap: 4px; white-space: nowrap; }
 .biography-figma, .biography-ai-icons { display: inline-flex; align-items: center; vertical-align: -.18em; }
 .biography-figma img { display: block; width: 16px; height: 16px; }
-.biography-ai-icons { gap: 5px; padding: 3px 9px; border-radius: 8px; background: #303034; white-space: nowrap; }
-.biography-ai-icons img { display: block; width: 17px; height: 17px; filter: invert(1); }
+.biography-ai-icons { gap: 6px; padding: 3px 9px; border-radius: 8px; background: #303034; white-space: nowrap; }
+.biography-ai-icons img { display: block; width: 17px; height: 17px; filter: invert(1); transform-origin: center bottom; transition: transform 250ms ease-out; }
+@media (hover: hover) and (pointer: fine) {
+  .biography-ai-icons:hover img { transform: translateY(-3px) rotate(7deg); }
+  .biography-ai-icons img:nth-child(2) { transition-delay: 30ms; }
+  .biography-ai-icons img:nth-child(3) { transition-delay: 60ms; }
+  .biography-ai-icons img:nth-child(4) { transition-delay: 90ms; }
+}
 :root[data-theme="dark"] .biography-ai-icons { background: #e7e7e8; }
 :root[data-theme="dark"] .biography-ai-icons img { filter: none; }
 .about-link { display: inline-flex; align-items: center; gap: 8px; margin-top: 18px; padding: 2px 0; border: 0; background: none; color: var(--color-muted); cursor: pointer; font-size: 16px; font-weight: 500; line-height: 1.35; text-decoration: none; transition: color 140ms ease; animation: about-link-float 2.2s ease-in-out .5s infinite; }
@@ -270,8 +276,8 @@ h1 { margin: 0; font-size: var(--type-hero); line-height: 1.15; letter-spacing: 
   .intro-copy { padding-top: 4px; }
   h1 { font-size: clamp(29px, 4vw, 38px); white-space: normal; }
   .roles { font-size: 16px; }
-  .biography { margin-top: 18px; font-size: 16px; line-height: 1.55; }
-  .biography p + p { margin-top: 16px; }
+  .biography { margin-top: 18px; font-size: 16px; line-height: 1.65; }
+  .biography p + p { margin-top: 18px; }
   .about-link { margin-top: 18px; }
 }
 
@@ -289,8 +295,8 @@ h1 { margin: 0; font-size: var(--type-hero); line-height: 1.15; letter-spacing: 
   .intro-copy { padding-top: 28px; }
   h1 { font-size: clamp(28px, 7.5vw, 30px); }
   .roles { font-size: 16px; }
-  .biography { margin-top: 23px; font-size: 16px; line-height: 1.55; }
-  .biography p + p { margin-top: 16px; }
+  .biography { margin-top: 23px; font-size: 16px; line-height: 1.65; }
+  .biography p + p { margin-top: 18px; }
   .about-link { margin-top: 18px; }
   .actions { margin-top: 32px; }
   .actions .action-button { min-height: 60px; font-size: 16px; }
@@ -320,6 +326,7 @@ h1 { margin: 0; font-size: var(--type-hero); line-height: 1.15; letter-spacing: 
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .biography-ai-icons img { transition: none; }
   .about-link { animation: none; transform: none; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
