@@ -142,16 +142,18 @@ function ProfilePhoto({ reduced }: { reduced: boolean }) {
   );
 }
 
-function Statistic({ value, suffix, label, reduced }: { value: number; suffix: string; label: string; reduced: boolean }) {
-  return (
-    <div className="statistic">
+function Statistic({ value, suffix, label, href, navigate, reduced }: { value: number; suffix: string; label: string; href?: string; navigate: (path: string) => void; reduced: boolean }) {
+  const content = <>
       <div className="statistic-value" aria-label={`${value}${suffix}`}>
         {reduced ? <span>{value}</span> : <CountUp to={value} duration={1.35} easing="easeOut" trigger="view" />}
         <span>{suffix}</span>
       </div>
       <p className="statistic-label">{label}</p>
-    </div>
-  );
+      {href && <span className="statistic-arrow" aria-hidden="true">↗</span>}
+    </>;
+  return href
+    ? <a className="statistic is-interactive" href={href} onClick={event => { if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey) return; event.preventDefault(); navigate(href); }}>{content}</a>
+    : <div className="statistic">{content}</div>;
 }
 
 export default function App() {
@@ -212,9 +214,9 @@ export default function App() {
           <p className="action-notice" role="status" aria-live="polite">{notice}</p>
 
           <div className="statistics" aria-label="Portfolio statistics">
-            <Statistic value={5} suffix={'+\u00a0yrs'} label="Creative Design" reduced={reduced} />
-            <Statistic value={4} suffix={'\u00a0yrs'} label="Web Development" reduced={reduced} />
-            <Statistic value={4} suffix="" label="Featured Projects" reduced={reduced} />
+            <Statistic value={5} suffix={'+\u00a0yrs'} label="Creative Design" href="/projects" navigate={navigate} reduced={reduced} />
+            <Statistic value={2} suffix={'+\u00a0yrs'} label="Building Software" href="/projects" navigate={navigate} reduced={reduced} />
+            <Statistic value={2} suffix="×" label="Hackathon Winner" navigate={navigate} reduced={reduced} />
           </div>
         </section>
         <HomepageSections />
