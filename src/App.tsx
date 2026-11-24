@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import HalftoneReveal from './components/reactbits/HalftoneReveal';
 import SplitText from './components/reactbits/SplitText';
 import CountUp from './components/reactbits/CountUp';
-import VariableProximity from './components/reactbits/VariableProximity';
 import ClickSpark from './components/reactbits/ClickSpark';
 import PortfolioActionButton from './components/PortfolioActionButton';
 import DayNightToggle from './components/DayNightToggle';
@@ -10,6 +9,9 @@ import AnimatedList from './components/reactbits/AnimatedList';
 import HomepageSections from './components/HomepageSections';
 import PortfolioPages from './components/PortfolioPages';
 import profilePhoto from '../imageprofileportfolio.png';
+
+const resumeAssets = import.meta.glob<string>('./assets/resume/*.pdf', { eager: true, query: '?url', import: 'default' });
+const resumeUrl = Object.values(resumeAssets)[0];
 
 type SidebarItem = { label: string; href?: string; icon: string; external?: boolean };
 const portfolioNavigation: SidebarItem[] = [
@@ -143,24 +145,23 @@ function ProfilePhoto({ reduced }: { reduced: boolean }) {
   );
 }
 
-function Statistic({ value, suffix, label, href, navigate, reduced }: { value: number; suffix: string; label: string; href?: string; navigate: (path: string) => void; reduced: boolean }) {
+function Statistic({ value, suffix, label, href, pending = false, navigate, reduced }: { value: number; suffix: string; label: string; href?: string; pending?: boolean; navigate: (path: string) => void; reduced: boolean }) {
   const content = <>
       <div className="statistic-value" aria-label={`${value}${suffix}`}>
         {reduced ? <span>{value}</span> : <CountUp to={value} duration={1.35} easing="easeOut" trigger="view" />}
         <span>{suffix}</span>
       </div>
       <p className="statistic-label">{label}</p>
-      {href && <span className="statistic-arrow" aria-hidden="true">↗</span>}
+      <span className="statistic-arrow" aria-hidden="true">↗</span>
     </>;
   return href
     ? <a className="statistic is-interactive" href={href} onClick={event => { if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey) return; event.preventDefault(); navigate(href); }}>{content}</a>
+    : pending ? <button className="statistic" type="button" disabled title="Details not yet available">{content}</button>
     : <div className="statistic">{content}</div>;
 }
 
 export default function App() {
   const reduced = useReducedMotion();
-  const biographyRef = useRef<HTMLDivElement>(null);
-  const [notice, setNotice] = useState('');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [pathname, setPathname] = useState(() => window.location.pathname.replace(/\/$/, '') || '/');
   const previousPathname = useRef(pathname);
@@ -169,6 +170,7 @@ export default function App() {
     setPathname(path);
     window.scrollTo(0, 0);
   };
+  const openResume = () => { if (resumeUrl) window.open(resumeUrl, '_blank', 'noopener,noreferrer'); };
 
   useEffect(() => {
     const onPopState = () => setPathname(window.location.pathname.replace(/\/$/, '') || '/');
@@ -183,7 +185,6 @@ export default function App() {
     document.querySelector<HTMLElement>('.portfolio-page-header h1, #hero-title')?.focus();
   }, [pathname]);
 
-  const emphasized = (label: string) => reduced ? label : <VariableProximity label={label} containerRef={biographyRef} fromFontVariationSettings="'wght' 650" toFontVariationSettings="'wght' 700" radius={85} falloff="gaussian" smoothing={0.2} scale={1} lift={0} idleWave={false} />;
 
   return (
     <ClickSpark sparkColor="currentColor" sparkSize={7} sparkRadius={25} sparkCount={6} sparkWidth={1.4} duration={420} cooldown={600} easing="ease-out" shape="line" randomness={0.1} glow={0} ring={false} layer="front" layerZIndex={30} disabled={reduced} ignoreSelector=".theme-toggle">
@@ -194,34 +195,38 @@ export default function App() {
         <section className="hero" aria-labelledby="hero-title">
           <div className="profile-introduction">
             <ProfilePhoto reduced={reduced} />
-            <div className="intro-copy" ref={biographyRef}>
-              <h1 id="hero-title" tabIndex={-1}>Mikhail Respicio</h1>
+            {resumeUrl && <div className="resume-mobile">
+              <PortfolioActionButton variant="resume" reducedMotion={reduced} onClick={openResume} aria-label="View Resume">
+                <DocumentIcon /><span>View Resume</span>
+              </PortfolioActionButton>
+            </div>}
+            <div className="intro-copy">
+              <div className="name-row">
+                <h1 id="hero-title" tabIndex={-1}>Mikhail Respicio</h1>
+                {resumeUrl && <div className="resume-desktop">
+                  <PortfolioActionButton variant="resume" reducedMotion={reduced} onClick={openResume} aria-label="View Resume">
+                    <DocumentIcon /><span className="resume-label">View Resume</span>
+                  </PortfolioActionButton>
+                </div>}
+              </div>
               <p className="roles">Software Developer <span aria-hidden="true">·</span> UI/UX Designer<br />Graphic Designer</p>
               <div className="biography">
-                <p>I'm a developer who enjoys turning ideas into <strong>{emphasized('useful, well-designed digital experiences')}</strong> that make everyday tasks easier.</p>
-                <p>I enjoy exploring new technologies, designing in <span className="biography-tool"><strong>{emphasized('Figma')}</strong><span role="img" aria-label="Figma logo" className="biography-figma"><img src="/icons/figma.svg" alt="" width="16" height="16" /></span></span>, and using <strong><span className="biography-ai-tool">{emphasized('AI')} <span className="biography-ai-icons" role="img" aria-label="Codex, ChatGPT, Claude, and Gemini logos"><img src="/icons/codex.svg" alt="" width="17" height="17" /><img src="/icons/chatgpt.svg" alt="" width="17" height="17" /><img src="/icons/claude.svg" alt="" width="17" height="17" /><img src="/icons/gemini.svg" alt="" width="17" height="17" /></span></span> {emphasized('to improve my development workflow')}</strong>. I like experimenting, solving problems, and finding better ways to bring ideas to life.</p>
+                <p>I'm a developer who enjoys turning ideas into <strong>useful, well-designed digital experiences</strong> that make everyday tasks easier.</p>
+                <p>I enjoy exploring new technologies, designing in <span className="biography-tool"><strong>Figma</strong><span role="img" aria-label="Figma logo" className="biography-figma"><img src="/icons/figma.svg" alt="" width="16" height="16" /></span></span>, and using <strong><span className="biography-ai-tool">AI <span className="biography-ai-icons" role="img" aria-label="Codex, ChatGPT, Claude, and Gemini logos"><img src="/icons/codex.svg" alt="" width="16" height="16" /><img src="/icons/chatgpt.svg" alt="" width="16" height="16" /><img src="/icons/claude.svg" alt="" width="16" height="16" /><img src="/icons/gemini.svg" alt="" width="16" height="16" /></span></span> to improve my development workflow</strong>. I like experimenting, solving problems, and finding better ways to bring ideas to life.</p>
               </div>
-              <a href="/about" className="about-link" onClick={event => { if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey) return; event.preventDefault(); navigate('/about'); }}>
-                <span className="about-arrow" aria-hidden="true">↓</span>
-                {reduced ? <span>More about me</span> : <SplitText text="More about me" tag="span" splitType="words" effect="fade" from={{ opacity: 0.55 }} to={{ opacity: 1 }} duration={0.35} delay={0.05} trigger="load" textAlign="left" />}
-              </a>
+              <div className="hero-action-row">
+                <a href="/about" className="about-link" onClick={event => { if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey) return; event.preventDefault(); navigate('/about'); }}>
+                  <span className="about-arrow" aria-hidden="true">↓</span>
+                  {reduced ? <span>More about me</span> : <SplitText text="More about me" tag="span" splitType="words" effect="fade" from={{ opacity: 0.55 }} to={{ opacity: 1 }} duration={0.35} delay={0.05} trigger="load" textAlign="left" />}
+                </a>
+              </div>
             </div>
           </div>
-
-          <div className="actions" aria-label="Portfolio actions">
-            <PortfolioActionButton variant="primary" reducedMotion={reduced} onClick={() => setNotice('Resume file has not been added yet.')}>
-              <DocumentIcon /><span>View Resume</span>
-            </PortfolioActionButton>
-            <PortfolioActionButton variant="secondary" reducedMotion={reduced} onClick={() => navigate('/contact')}>
-              <MailIcon /><span>Contact Me</span>
-            </PortfolioActionButton>
-          </div>
-          <p className="action-notice" role="status" aria-live="polite">{notice}</p>
 
           <div className="statistics" aria-label="Portfolio statistics">
             <Statistic value={5} suffix={'+\u00a0yrs'} label="Creative Design" href="/projects" navigate={navigate} reduced={reduced} />
             <Statistic value={2} suffix={'+\u00a0yrs'} label="Building Software" href="/projects" navigate={navigate} reduced={reduced} />
-            <Statistic value={2} suffix="×" label="Hackathon Winner" navigate={navigate} reduced={reduced} />
+            <Statistic value={2} suffix="×" label="Hackathon Winner" pending navigate={navigate} reduced={reduced} />
           </div>
         </section>
         <HomepageSections />

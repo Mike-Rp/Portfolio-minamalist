@@ -1,6 +1,6 @@
 import SpecularButton, { type SpecularButtonProps } from './reactbits/SpecularButton';
 
-type Variant = 'primary' | 'secondary';
+type Variant = 'primary' | 'secondary' | 'resume';
 
 type VisualProp =
   | 'size'
@@ -39,6 +39,15 @@ const variants = {
     intensity: 0.75,
     idleIntensity: 0.15,
   },
+  resume: {
+    tint: '#ffffff',
+    tintOpacity: 0,
+    textColor: '#111111',
+    lineColor: '#8a8a8a',
+    baseColor: '#777777',
+    intensity: 0.75,
+    idleIntensity: 0.12,
+  },
 } satisfies Record<Variant, Partial<SpecularButtonProps>>;
 
 export default function PortfolioActionButton({ variant, reducedMotion = false, className = '', ...props }: PortfolioActionButtonProps) {
@@ -46,7 +55,7 @@ export default function PortfolioActionButton({ variant, reducedMotion = false, 
     <SpecularButton
       {...variants[variant]}
       size="md"
-      radius={12}
+      radius={variant === 'resume' ? 20 : 12}
       followMouse={!reducedMotion}
       idleIntensity={reducedMotion ? 0 : variants[variant].idleIntensity}
       autoAnimate={false}
