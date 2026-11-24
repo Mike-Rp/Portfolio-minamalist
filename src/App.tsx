@@ -12,23 +12,23 @@ import profilePhoto from '../imageprofileportfolio.png';
 
 type SidebarItem = { label: string; href?: string; icon: string; external?: boolean };
 const portfolioNavigation: SidebarItem[] = [
-  { label: 'Home', href: '/', icon: 'home' },
   { label: 'More about me', href: '/about', icon: 'about' },
   { label: 'Projects', href: '/projects', icon: 'projects' },
   { label: 'Experience', href: '/experience', icon: 'experience' },
   { label: 'Stack', href: '/stack', icon: 'stack' },
   { label: 'Certifications', href: '/certifications', icon: 'certifications' },
 ];
-const connectNavigation: SidebarItem[] = [
+const exploreNavigation: SidebarItem[] = [
+  { label: 'Blog', icon: 'blog' },
   { label: 'GitHub', href: 'https://github.com/Mike-Rp', icon: 'github', external: true },
-  { label: 'LinkedIn', icon: 'linkedin' },
 ];
 const portfolioLabels = portfolioNavigation.map(item => item.label);
-const connectLabels = connectNavigation.map(item => item.label);
+const exploreLabels = exploreNavigation.map(item => item.label);
 
 function SidebarIcon({ name }: { name: string }) {
   const paths: Record<string, React.ReactNode> = {
     home: <><path d="m2.5 8 5.5-5 5.5 5v5.5H2.5z" /><path d="M6 13.5V9h4v4.5" /></>,
+    blog: <><rect x="3" y="2" width="10" height="12" rx="1.5" /><path d="M5.5 5.25h5M5.5 8h5M5.5 10.75h3.5" /></>,
     about: <><circle cx="8" cy="5" r="2.25" /><path d="M3.25 13.25c.5-2.5 2.1-3.75 4.75-3.75s4.25 1.25 4.75 3.75" /></>,
     projects: <><rect x="2" y="2.5" width="5" height="5" rx=".7" /><rect x="9" y="2.5" width="5" height="5" rx=".7" /><rect x="2" y="9.5" width="5" height="4" rx=".7" /><rect x="9" y="9.5" width="5" height="4" rx=".7" /></>,
     experience: <><rect x="2" y="5" width="12" height="8" rx="1" /><path d="M5.5 5V3.5h5V5M2 8.5c4 2 8 2 12 0" /></>,
@@ -94,7 +94,7 @@ function Sidebar({ onContact, collapsed, onToggleCollapse, pathname, navigate }:
   const navigationGroup = (label: string, items: SidebarItem[]) => (
     <div className="sidebar-nav-group">
       <p className="sidebar-group-label">{label}</p>
-      <AnimatedList items={items === portfolioNavigation ? portfolioLabels : connectLabels} selectedIndex={items.findIndex(item => item.href === pathname)} selectOnClick={false} frame={false} showGradients={false} displayScrollbar={false} enableArrowNavigation={false} selectOnHover={false} animation="slide" animateOnce stagger={0.035} width="100%" maxHeight="none" gap={2} className="sidebar-list" renderItem={(_, index) => {
+      <AnimatedList items={items === portfolioNavigation ? portfolioLabels : exploreLabels} selectedIndex={items.findIndex(item => item.href === pathname)} selectOnClick={false} frame={false} showGradients={false} displayScrollbar={false} enableArrowNavigation={false} selectOnHover={false} animation="slide" animateOnce stagger={0.035} width="100%" maxHeight="none" gap={2} className="sidebar-list" renderItem={(_, index) => {
         const item = items[index];
         const content = <><SidebarIcon name={item.icon} /><span className="sidebar-item-label">{item.label}</span></>;
         return item.href
@@ -121,9 +121,10 @@ function Sidebar({ onContact, collapsed, onToggleCollapse, pathname, navigate }:
           <button className={`sidebar-contact${pathname === '/contact' ? ' is-current' : ''}`} type="button" aria-label="Contact" aria-current={pathname === '/contact' ? 'page' : undefined} title={collapsed ? 'Contact' : undefined} onClick={() => { onContact(); closeMobileNavigation(false); }}><MailIcon /><span>Contact</span><span className="sidebar-contact-arrow" aria-hidden="true">↗</span></button>
           <nav id="primary-navigation" className="sidebar-nav" aria-label="Sidebar navigation">
             {navigationGroup('Portfolio', portfolioNavigation)}
-            {navigationGroup('Connect', connectNavigation)}
+            <div className="sidebar-nav-divider" role="separator" />
+            {navigationGroup('Explore', exploreNavigation)}
           </nav>
-          <div className="sidebar-foot"><p className="sidebar-caption">© 2026 Mikhail Respicio</p><DayNightToggle /></div>
+          <div className="sidebar-foot"><p className="sidebar-caption">GMT+8</p><div className="sidebar-foot-actions"><DayNightToggle /><button className="sidebar-foot-icon" type="button" aria-label="Email unavailable" title="Email address not configured" disabled><MailIcon /></button><button className="sidebar-foot-icon" type="button" aria-label="LinkedIn unavailable" title="LinkedIn URL not configured" disabled><SidebarIcon name="linkedin" /></button></div></div>
         </div>
       </aside>
     </>
