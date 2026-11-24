@@ -1,5 +1,5 @@
 import { experience, projects, stack } from '../homepageData';
-import profilePhoto from '../../imageprofileportfolio.png';
+import PhotoStack, { type StackPhoto } from './PhotoStack';
 
 type Props = { pathname: string; navigate: (path: string) => void };
 
@@ -30,19 +30,38 @@ function Education() {
   return <section className="page-section" aria-labelledby="education-page-title"><h2 id="education-page-title">Education</h2><div className="experience-row"><div><h3>BS Information Technology</h3><p>STI College</p></div><time>2023</time></div></section>;
 }
 
-export default function PortfolioPages({ pathname, navigate }: Props) {
-  if (pathname === '/about') return <PageFrame title="More about me" navigate={navigate}>
-    <section className="page-section about-page-intro" aria-label="Profile introduction">
-      <img src={profilePhoto} alt="Mikhail Respicio taking a mirror portrait" width="270" height="280" />
-      <div><h2>Mikhail Respicio</h2><p className="page-muted">Software Developer · UI/UX Designer<br />Graphic Designer</p>
-        <p>I'm a developer who learns fast, adapts easily, and loves turning ideas into things people actually use.</p>
-        <p>I enjoy exploring new technologies, creating designs in Figma, and using AI to improve my development workflow. I'm always learning, experimenting, and building solutions that make everyday tasks easier.</p>
-        <InternalLink href="/contact" navigate={navigate} className="page-text-link">Contact →</InternalLink>
-      </div>
+const aboutPhotos: StackPhoto[] = [
+  { src: '/about/1.webp', alt: 'Mikhail wearing medals at an event' },
+  { src: '/about/2.webp', alt: 'Mikhail presenting beside a display' },
+  { src: '/about/3.webp', alt: 'Mikhail holding an award' },
+  { src: '/about/4.webp', alt: 'Mikhail playing badminton' },
+  { src: '/about/5.webp', alt: 'Mikhail holding a certificate' },
+  { src: '/about/6.webp', alt: 'Mikhail taking a mirror photograph' },
+  { src: '/about/7.webp', alt: 'Computer workstation with multiple displays' },
+  { src: '/about/8.webp', alt: 'Mikhail speaking beside a projected screen' },
+];
+
+function AboutPage({ navigate }: { navigate: Props['navigate'] }) {
+  return <div className="portfolio-page about-page">
+    <header className="portfolio-page-header">
+      <InternalLink href="/" navigate={navigate} className="about-home-link"><span aria-hidden="true">←</span> Home</InternalLink>
+      <h1 tabIndex={-1}>More about me</h1>
+    </header>
+    <PhotoStack photos={aboutPhotos} />
+    <section className="about-copy" aria-label="About Mikhail Respicio">
+      <div className="about-identity"><h2>Mikhail Respicio</h2><p>Software Developer · UI/UX Designer · Graphic Designer</p></div>
+      <p>I'm a developer who enjoys turning ideas into useful, well-designed digital experiences that make everyday tasks easier.</p>
+      <p>I enjoy exploring new technologies, designing in Figma, and using AI to improve my development workflow. I like experimenting, solving problems, and finding better ways to bring ideas to life.</p>
+      <InternalLink href="/contact" navigate={navigate} className="about-contact-link">Get in touch</InternalLink>
     </section>
-    <section className="page-section" aria-labelledby="about-experience-title"><h2 id="about-experience-title">Experience</h2><ExperienceRows limit={3} /><InternalLink href="/experience" navigate={navigate} className="page-text-link">View all experience →</InternalLink></section>
+    <section className="page-section about-experience" aria-labelledby="about-experience-title"><h2 id="about-experience-title">Experience</h2><ExperienceRows /></section>
     <Education />
-  </PageFrame>;
+    <footer className="portfolio-page-footer">© 2026 Mikhail Respicio</footer>
+  </div>;
+}
+
+export default function PortfolioPages({ pathname, navigate }: Props) {
+  if (pathname === '/about') return <AboutPage navigate={navigate} />;
 
   if (pathname === '/projects') return <PageFrame title="Projects" navigate={navigate}>
     <section className="page-section" aria-labelledby="projects-page-title"><h2 id="projects-page-title">Featured Projects <span>{String(projects.length).padStart(2, '0')}</span></h2>
