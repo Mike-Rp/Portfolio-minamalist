@@ -3,6 +3,7 @@ import HalftoneReveal from './components/reactbits/HalftoneReveal';
 import SplitText from './components/reactbits/SplitText';
 import CountUp from './components/reactbits/CountUp';
 import VariableProximity from './components/reactbits/VariableProximity';
+import ClickSpark from './components/reactbits/ClickSpark';
 import PortfolioActionButton from './components/PortfolioActionButton';
 import DayNightToggle from './components/DayNightToggle';
 import AnimatedList from './components/reactbits/AnimatedList';
@@ -183,6 +184,7 @@ export default function App() {
   }, [pathname]);
 
   return (
+    <ClickSpark sparkColor="currentColor" sparkSize={7} sparkRadius={25} sparkCount={6} sparkWidth={1.4} duration={420} cooldown={600} easing="ease-out" shape="line" randomness={0.1} glow={0} ring={false} layer="front" layerZIndex={30} disabled={reduced} ignoreSelector=".theme-toggle">
     <div className={`site-shell${sidebarCollapsed ? ' sidebar-is-collapsed' : ''}`}>
       <Sidebar onContact={() => navigate('/contact')} collapsed={sidebarCollapsed} onToggleCollapse={() => setSidebarCollapsed(value => !value)} pathname={pathname} navigate={navigate} />
       <main id={pathname === '/' ? 'home' : undefined} className="main-content">
@@ -224,5 +226,6 @@ export default function App() {
         </> : <PortfolioPages pathname={pathname} navigate={navigate} />}
       </main>
     </div>
+    </ClickSpark>
   );
 }
