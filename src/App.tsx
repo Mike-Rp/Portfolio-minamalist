@@ -118,7 +118,7 @@ function Sidebar({ onContact, collapsed, onToggleCollapse, pathname, navigate }:
             <button className="sidebar-collapse" type="button" aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} aria-expanded={!collapsed} title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} onClick={onToggleCollapse}><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="1.75" y="2.25" width="12.5" height="11.5" rx="2" /><path d="M6 2.5v11M9.5 6.25 7.75 8l1.75 1.75" /></svg></button>
             <button ref={closeRef} className="sidebar-close" type="button" aria-label="Close navigation" onClick={() => { setOpen(false); triggerRef.current?.focus(); }}>×</button>
           </div>
-          <button className={`sidebar-contact${pathname === '/contact' ? ' is-current' : ''}`} type="button" aria-label="Contact" aria-current={pathname === '/contact' ? 'page' : undefined} title={collapsed ? 'Contact' : undefined} onClick={() => { onContact(); closeMobileNavigation(false); }}><MailIcon /><span>Contact</span><span className="sidebar-contact-arrow" aria-hidden="true">↗</span></button>
+          <button className={`sidebar-contact${pathname === '/contact' ? ' is-current' : ''}`} type="button" aria-label="Contact" aria-current={pathname === '/contact' ? 'page' : undefined} title={collapsed ? 'Contact' : undefined} onClick={() => { onContact(); closeMobileNavigation(false); }}><MailIcon /><span>Contact</span></button>
           <nav id="primary-navigation" className="sidebar-nav" aria-label="Sidebar navigation">
             {navigationGroup('Portfolio', portfolioNavigation)}
             <div className="sidebar-nav-divider" role="separator" />
@@ -195,15 +195,15 @@ export default function App() {
                 <p>I enjoy exploring new technologies, creating designs in <strong>Figma</strong>, and using <strong>AI to improve my development workflow</strong>. I'm always learning, experimenting, and building solutions that make everyday tasks easier.</p>
               </div>
               <a href="/about" className="about-link" onClick={event => { if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey) return; event.preventDefault(); navigate('/about'); }}>
+                <span className="about-arrow" aria-hidden="true">↓</span>
                 {reduced ? <span>More about me</span> : <SplitText text="More about me" tag="span" splitType="words" effect="fade" from={{ opacity: 0.55 }} to={{ opacity: 1 }} duration={0.35} delay={0.05} trigger="load" textAlign="left" />}
-                <span className="about-arrow" aria-hidden="true">→</span>
               </a>
             </div>
           </div>
 
           <div className="actions" aria-label="Portfolio actions">
             <PortfolioActionButton variant="primary" reducedMotion={reduced} onClick={() => setNotice('Resume file has not been added yet.')}>
-              <DocumentIcon /><span>View Resume</span><span className="action-trailing" aria-hidden="true">↗</span>
+              <DocumentIcon /><span>View Resume</span>
             </PortfolioActionButton>
             <PortfolioActionButton variant="secondary" reducedMotion={reduced} onClick={() => navigate('/contact')}>
               <MailIcon /><span>Contact Me</span>
