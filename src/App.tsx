@@ -159,10 +159,10 @@ function Statistic({ value, suffix, label, href, navigate, reduced }: { value: n
 export default function App() {
   const reduced = useReducedMotion();
   const biographyRef = useRef<HTMLDivElement>(null);
-  const routeInitialized = useRef(false);
   const [notice, setNotice] = useState('');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [pathname, setPathname] = useState(() => window.location.pathname.replace(/\/$/, '') || '/');
+  const previousPathname = useRef(pathname);
   const navigate = (path: string) => {
     if (window.location.pathname !== path) window.history.pushState(null, '', path);
     setPathname(path);
@@ -177,7 +177,8 @@ export default function App() {
 
   useEffect(() => { document.title = `${pathname === '/' ? 'Mikhail Respicio' : `${pathname.slice(1).replace(/^[a-z]/, letter => letter.toUpperCase())} — Mikhail Respicio`} — Portfolio`; }, [pathname]);
   useEffect(() => {
-    if (!routeInitialized.current) { routeInitialized.current = true; return; }
+    if (previousPathname.current === pathname) return;
+    previousPathname.current = pathname;
     document.querySelector<HTMLElement>('.portfolio-page-header h1, #hero-title')?.focus();
   }, [pathname]);
 
