@@ -146,6 +146,13 @@ h1 { margin: 0; font-size: var(--type-hero); line-height: 1.15; letter-spacing: 
 .biography p { margin: 0; }
 .biography p + p { margin-top: 16px; }
 .biography strong { font-weight: 600; }
+.biography-tool, .biography-ai-tool { display: inline-flex; align-items: baseline; gap: 4px; white-space: nowrap; }
+.biography-figma, .biography-ai-icons { display: inline-flex; align-items: center; vertical-align: -.18em; }
+.biography-figma img { display: block; width: 16px; height: 16px; }
+.biography-ai-icons { gap: 5px; padding: 3px 9px; border-radius: 8px; background: #303034; white-space: nowrap; }
+.biography-ai-icons img { display: block; width: 17px; height: 17px; filter: invert(1); }
+:root[data-theme="dark"] .biography-ai-icons { background: #e7e7e8; }
+:root[data-theme="dark"] .biography-ai-icons img { filter: none; }
 .about-link { display: inline-flex; align-items: center; gap: 7px; margin-top: 22px; padding: 2px 0; border: 0; background: none; color: var(--color-muted); cursor: pointer; font-size: 14px; font-weight: 500; line-height: 1.35; text-decoration: none; transition: color 140ms ease; }
 .about-link:hover { color: var(--color-ink); }
 .about-arrow { display: inline-block; font-size: 15px; font-weight: 400; line-height: 1; animation: about-arrow-float 2s ease-in-out infinite; }
