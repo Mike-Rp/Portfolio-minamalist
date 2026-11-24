@@ -142,12 +142,12 @@ a { color: inherit; }
 .profile-photo.is-active > img { filter: none; }
 .profile-photo:focus-visible { outline: 3px solid var(--color-ink); outline-offset: 4px; }
 .photo-effect { position: absolute !important; inset: 0; border-radius: inherit; pointer-events: auto; }
-.intro-copy { min-width: 0; padding-top: 22px; }
+.intro-copy { min-width: 0; padding-top: 4px; }
 h1 { margin: 0; font-size: var(--type-hero); line-height: 1.15; letter-spacing: -.025em; font-weight: 600; white-space: nowrap; }
 .roles { margin: 7px 0 0; color: var(--color-muted); font-size: 16px; font-weight: 400; line-height: 1.25; letter-spacing: -.01em; }
 .biography { margin-top: 24px; font-size: var(--type-body); line-height: 1.6; letter-spacing: -.008em; }
 .biography p { margin: 0; }
-.biography p + p { margin-top: 16px; }
+.biography p + p { margin-top: 18px; }
 .biography strong { font-weight: 600; }
 .biography-tool, .biography-ai-tool { display: inline-flex; align-items: baseline; gap: 4px; white-space: nowrap; }
 .biography-figma, .biography-ai-icons { display: inline-flex; align-items: center; vertical-align: -.18em; }
@@ -156,11 +156,10 @@ h1 { margin: 0; font-size: var(--type-hero); line-height: 1.15; letter-spacing: 
 .biography-ai-icons img { display: block; width: 17px; height: 17px; filter: invert(1); }
 :root[data-theme="dark"] .biography-ai-icons { background: #e7e7e8; }
 :root[data-theme="dark"] .biography-ai-icons img { filter: none; }
-.about-link { display: inline-flex; align-items: center; gap: 7px; margin-top: 22px; padding: 2px 0; border: 0; background: none; color: var(--color-muted); cursor: pointer; font-size: 14px; font-weight: 500; line-height: 1.35; text-decoration: none; transition: color 140ms ease; }
+.about-link { display: inline-flex; align-items: center; gap: 8px; margin-top: 18px; padding: 2px 0; border: 0; background: none; color: var(--color-muted); cursor: pointer; font-size: 16px; font-weight: 500; line-height: 1.35; text-decoration: none; transition: color 140ms ease; animation: about-link-float 2.2s ease-in-out .5s infinite; }
 .about-link:hover { color: var(--color-ink); }
-.about-arrow { display: inline-block; font-size: 15px; font-weight: 400; line-height: 1; animation: about-arrow-float 2s ease-in-out infinite; }
-.about-link:hover .about-arrow { animation: none; transform: translateY(2px); transition: transform 200ms ease; }
-@keyframes about-arrow-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
+.about-arrow { display: inline-block; font-size: 18px; font-weight: 400; line-height: 1; }
+@keyframes about-link-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
 
 .actions { display: grid; grid-template-columns: 1.28fr 1fr; gap: 16px; margin-top: 42px; }
 .actions .action-button { width: 100%; min-width: 0; height: 48px; min-height: 48px; padding-block: 0; overflow: hidden; border-radius: 12px; font-family: inherit; font-size: 16px; font-weight: 500; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
@@ -272,8 +271,8 @@ h1 { margin: 0; font-size: var(--type-hero); line-height: 1.15; letter-spacing: 
   h1 { font-size: clamp(29px, 4vw, 38px); white-space: normal; }
   .roles { font-size: 16px; }
   .biography { margin-top: 18px; font-size: 16px; line-height: 1.55; }
-  .biography p + p { margin-top: 12px; }
-  .about-link { margin-top: 16px; }
+  .biography p + p { margin-top: 16px; }
+  .about-link { margin-top: 18px; }
 }
 
 @media (max-width: 700px) {
@@ -292,7 +291,7 @@ h1 { margin: 0; font-size: var(--type-hero); line-height: 1.15; letter-spacing: 
   .roles { font-size: 16px; }
   .biography { margin-top: 23px; font-size: 16px; line-height: 1.55; }
   .biography p + p { margin-top: 16px; }
-  .about-link { margin-top: 20px; }
+  .about-link { margin-top: 18px; }
   .actions { margin-top: 32px; }
   .actions .action-button { min-height: 60px; font-size: 16px; }
   .statistics { margin-top: 28px; }
@@ -321,7 +320,7 @@ h1 { margin: 0; font-size: var(--type-hero); line-height: 1.15; letter-spacing: 
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .about-arrow, .about-link:hover .about-arrow { animation: none; transform: none; }
+  .about-link { animation: none; transform: none; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
   .actions .action-button .specular-button__light { display: none; }
