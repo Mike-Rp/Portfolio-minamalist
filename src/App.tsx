@@ -7,21 +7,24 @@ import PortfolioActionButton from './components/PortfolioActionButton';
 import DayNightToggle from './components/DayNightToggle';
 import AnimatedList from './components/reactbits/AnimatedList';
 import HomepageSections from './components/HomepageSections';
+import PortfolioPages from './components/PortfolioPages';
 import profilePhoto from '../imageprofileportfolio.png';
 
 type SidebarItem = { label: string; href?: string; icon: string; external?: boolean };
 const portfolioNavigation: SidebarItem[] = [
-  { label: 'Home', href: '#home', icon: 'home' },
-  { label: 'About me', icon: 'about' },
-  { label: 'Projects', href: '#projects-title', icon: 'projects' },
-  { label: 'Experience', href: '#experience-title', icon: 'experience' },
-  { label: 'Stack', href: '#stack-title', icon: 'stack' },
-  { label: 'Certifications', icon: 'certifications' },
+  { label: 'Home', href: '/', icon: 'home' },
+  { label: 'More about me', href: '/about', icon: 'about' },
+  { label: 'Projects', href: '/projects', icon: 'projects' },
+  { label: 'Experience', href: '/experience', icon: 'experience' },
+  { label: 'Stack', href: '/stack', icon: 'stack' },
+  { label: 'Certifications', href: '/certifications', icon: 'certifications' },
 ];
 const connectNavigation: SidebarItem[] = [
   { label: 'GitHub', href: 'https://github.com/Mike-Rp', icon: 'github', external: true },
   { label: 'LinkedIn', icon: 'linkedin' },
 ];
+const portfolioLabels = portfolioNavigation.map(item => item.label);
+const connectLabels = connectNavigation.map(item => item.label);
 
 function SidebarIcon({ name }: { name: string }) {
   const paths: Record<string, React.ReactNode> = {
@@ -58,16 +61,15 @@ function MailIcon() {
   return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="1.5" /><path d="m3 6 9 7 9-7" strokeLinejoin="round" /></svg>;
 }
 
-function Sidebar({ onContact, collapsed, onToggleCollapse }: { onContact: () => void; collapsed: boolean; onToggleCollapse: () => void }) {
+function Sidebar({ onContact, collapsed, onToggleCollapse, pathname, navigate }: { onContact: () => void; collapsed: boolean; onToggleCollapse: () => void; pathname: string; navigate: (path: string) => void }) {
   const [open, setOpen] = useState(false);
-  const [activeHref, setActiveHref] = useState(() => window.location.hash || '#home');
   const triggerRef = useRef<HTMLButtonElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const sidebarRef = useRef<HTMLElement>(null);
-  const closeMobileNavigation = () => {
+  const closeMobileNavigation = (restoreFocus = true) => {
     if (!open) return;
     setOpen(false);
-    requestAnimationFrame(() => triggerRef.current?.focus());
+    if (restoreFocus) requestAnimationFrame(() => triggerRef.current?.focus());
   };
 
   useEffect(() => {
@@ -89,20 +91,14 @@ function Sidebar({ onContact, collapsed, onToggleCollapse }: { onContact: () => 
     return () => window.removeEventListener('keydown', closeOnEscape);
   }, [open]);
 
-  useEffect(() => {
-    const update = () => setActiveHref(window.location.hash || '#home');
-    window.addEventListener('hashchange', update);
-    return () => window.removeEventListener('hashchange', update);
-  }, []);
-
   const navigationGroup = (label: string, items: SidebarItem[]) => (
     <div className="sidebar-nav-group">
       <p className="sidebar-group-label">{label}</p>
-      <AnimatedList items={items.map(item => item.label)} selectedIndex={items.findIndex(item => item.href === activeHref)} selectOnClick={false} frame={false} showGradients={false} displayScrollbar={false} enableArrowNavigation={false} selectOnHover={false} animation="slide" animateOnce stagger={0.035} width="100%" maxHeight="none" gap={2} className="sidebar-list" renderItem={(_, index) => {
+      <AnimatedList items={items === portfolioNavigation ? portfolioLabels : connectLabels} selectedIndex={items.findIndex(item => item.href === pathname)} selectOnClick={false} frame={false} showGradients={false} displayScrollbar={false} enableArrowNavigation={false} selectOnHover={false} animation="slide" animateOnce stagger={0.035} width="100%" maxHeight="none" gap={2} className="sidebar-list" renderItem={(_, index) => {
         const item = items[index];
         const content = <><SidebarIcon name={item.icon} /><span className="sidebar-item-label">{item.label}</span></>;
         return item.href
-          ? <a className={`nav-item${activeHref === item.href ? ' is-current' : ''}`} href={item.href} title={collapsed ? item.label : undefined} aria-label={item.label} aria-current={activeHref === item.href ? 'location' : undefined} target={item.external ? '_blank' : undefined} rel={item.external ? 'noopener noreferrer' : undefined} onClick={() => { if (!item.external) setActiveHref(item.href!); closeMobileNavigation(); }}>{content}</a>
+          ? <a className={`nav-item${pathname === item.href ? ' is-current' : ''}`} href={item.href} title={collapsed ? item.label : undefined} aria-label={item.label} aria-current={pathname === item.href ? 'page' : undefined} target={item.external ? '_blank' : undefined} rel={item.external ? 'noopener noreferrer' : undefined} onClick={event => { if (!item.external && !event.ctrlKey && !event.metaKey && !event.shiftKey && event.button === 0) { event.preventDefault(); navigate(item.href!); closeMobileNavigation(false); } }}>{content}</a>
           : <span className="nav-item is-pending" aria-disabled="true" title={`${item.label} is planned for a future phase`}>{content}</span>;
       }} />
     </div>
@@ -112,17 +108,17 @@ function Sidebar({ onContact, collapsed, onToggleCollapse }: { onContact: () => 
     <>
       <div className="mobile-sidebar-bar">
         <button ref={triggerRef} className="menu-toggle" type="button" aria-label="Open navigation" aria-expanded={open} aria-controls="primary-navigation" onClick={() => setOpen(true)}><span /><span /><span /></button>
-        <a className="sidebar-brand" href="#home" onClick={closeMobileNavigation}>Mikhail Respicio<span className="brand-dot">.</span></a>
+        <a className="sidebar-brand" href="/" onClick={event => { event.preventDefault(); navigate('/'); closeMobileNavigation(false); }}>Mikhail Respicio<span className="brand-dot">.</span></a>
       </div>
-      {open && <button className="sidebar-backdrop" type="button" tabIndex={-1} aria-label="Close navigation backdrop" onClick={closeMobileNavigation} />}
+      {open && <button className="sidebar-backdrop" type="button" tabIndex={-1} aria-label="Close navigation backdrop" onClick={() => closeMobileNavigation()} />}
       <aside ref={sidebarRef} className={`sidebar${open ? ' is-open' : ''}${collapsed ? ' is-collapsed' : ''}`}>
         <div className="sidebar-panel">
           <div className="sidebar-heading">
-            <a className="sidebar-brand" href="#home" onClick={closeMobileNavigation}>Mikhail Respicio<span className="brand-dot">.</span></a>
+            <a className="sidebar-brand" href="/" onClick={event => { event.preventDefault(); navigate('/'); closeMobileNavigation(false); }}>Mikhail Respicio<span className="brand-dot">.</span></a>
             <button className="sidebar-collapse" type="button" aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} aria-expanded={!collapsed} title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} onClick={onToggleCollapse}><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="1.75" y="2.25" width="12.5" height="11.5" rx="2" /><path d="M6 2.5v11M9.5 6.25 7.75 8l1.75 1.75" /></svg></button>
             <button ref={closeRef} className="sidebar-close" type="button" aria-label="Close navigation" onClick={() => { setOpen(false); triggerRef.current?.focus(); }}>×</button>
           </div>
-          <button className="sidebar-contact" type="button" aria-label="Contact" title={collapsed ? 'Contact' : undefined} onClick={() => { onContact(); closeMobileNavigation(); }}><MailIcon /><span>Contact</span><span className="sidebar-contact-arrow" aria-hidden="true">↗</span></button>
+          <button className={`sidebar-contact${pathname === '/contact' ? ' is-current' : ''}`} type="button" aria-label="Contact" aria-current={pathname === '/contact' ? 'page' : undefined} title={collapsed ? 'Contact' : undefined} onClick={() => { onContact(); closeMobileNavigation(false); }}><MailIcon /><span>Contact</span><span className="sidebar-contact-arrow" aria-hidden="true">↗</span></button>
           <nav id="primary-navigation" className="sidebar-nav" aria-label="Sidebar navigation">
             {navigationGroup('Portfolio', portfolioNavigation)}
             {navigationGroup('Connect', connectNavigation)}
@@ -160,27 +156,47 @@ function Statistic({ value, suffix, label, reduced }: { value: number; suffix: s
 export default function App() {
   const reduced = useReducedMotion();
   const biographyRef = useRef<HTMLDivElement>(null);
+  const routeInitialized = useRef(false);
   const [notice, setNotice] = useState('');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [pathname, setPathname] = useState(() => window.location.pathname.replace(/\/$/, '') || '/');
+  const navigate = (path: string) => {
+    if (window.location.pathname !== path) window.history.pushState(null, '', path);
+    setPathname(path);
+    window.scrollTo(0, 0);
+  };
+
+  useEffect(() => {
+    const onPopState = () => setPathname(window.location.pathname.replace(/\/$/, '') || '/');
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
+
+  useEffect(() => { document.title = `${pathname === '/' ? 'Mikhail Respicio' : `${pathname.slice(1).replace(/^[a-z]/, letter => letter.toUpperCase())} — Mikhail Respicio`} — Portfolio`; }, [pathname]);
+  useEffect(() => {
+    if (!routeInitialized.current) { routeInitialized.current = true; return; }
+    document.querySelector<HTMLElement>('.portfolio-page-header h1, #hero-title')?.focus();
+  }, [pathname]);
 
   return (
     <div className={`site-shell${sidebarCollapsed ? ' sidebar-is-collapsed' : ''}`}>
-      <Sidebar onContact={() => setNotice('Contact address has not been added yet.')} collapsed={sidebarCollapsed} onToggleCollapse={() => setSidebarCollapsed(value => !value)} />
-      <main id="home" className="main-content">
+      <Sidebar onContact={() => navigate('/contact')} collapsed={sidebarCollapsed} onToggleCollapse={() => setSidebarCollapsed(value => !value)} pathname={pathname} navigate={navigate} />
+      <main id={pathname === '/' ? 'home' : undefined} className="main-content">
+        {pathname === '/' ? <>
         <section className="hero" aria-labelledby="hero-title">
           <div className="profile-introduction">
             <ProfilePhoto reduced={reduced} />
             <div className="intro-copy" ref={biographyRef}>
-              <h1 id="hero-title">Mikhail Respicio</h1>
+              <h1 id="hero-title" tabIndex={-1}>Mikhail Respicio</h1>
               <p className="roles">Software Developer <span aria-hidden="true">·</span> UI/UX Designer<br />Graphic Designer</p>
               <div className="biography">
                 <p>I'm a developer who <strong>{reduced ? 'learns fast' : <VariableProximity label="learns fast" containerRef={biographyRef} fromFontVariationSettings="'wght' 600" toFontVariationSettings="'wght' 650" radius={55} smoothing={0.18} />}</strong>, adapts easily, and loves turning ideas into things people actually use.</p>
                 <p>I enjoy exploring new technologies, creating designs in <strong>Figma</strong>, and using <strong>AI to improve my development workflow</strong>. I'm always learning, experimenting, and building solutions that make everyday tasks easier.</p>
               </div>
-              <button type="button" className="about-link" onClick={() => setNotice('The About section is planned for a later phase.')}>
+              <a href="/about" className="about-link" onClick={event => { if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey) return; event.preventDefault(); navigate('/about'); }}>
                 {reduced ? <span>More about me</span> : <SplitText text="More about me" tag="span" splitType="words" effect="fade" from={{ opacity: 0.55 }} to={{ opacity: 1 }} duration={0.35} delay={0.05} trigger="load" textAlign="left" />}
                 <span className="about-arrow" aria-hidden="true">→</span>
-              </button>
+              </a>
             </div>
           </div>
 
@@ -188,7 +204,7 @@ export default function App() {
             <PortfolioActionButton variant="primary" reducedMotion={reduced} onClick={() => setNotice('Resume file has not been added yet.')}>
               <DocumentIcon /><span>View Resume</span><span className="action-trailing" aria-hidden="true">↗</span>
             </PortfolioActionButton>
-            <PortfolioActionButton variant="secondary" reducedMotion={reduced} onClick={() => setNotice('Contact address has not been added yet.')}>
+            <PortfolioActionButton variant="secondary" reducedMotion={reduced} onClick={() => navigate('/contact')}>
               <MailIcon /><span>Contact Me</span>
             </PortfolioActionButton>
           </div>
@@ -201,6 +217,7 @@ export default function App() {
           </div>
         </section>
         <HomepageSections />
+        </> : <PortfolioPages pathname={pathname} navigate={navigate} />}
       </main>
     </div>
   );
