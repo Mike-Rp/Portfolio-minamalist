@@ -14,7 +14,7 @@ function InternalLink({ href, children, navigate, className }: { href: string; c
 function PageFrame({ title, children, navigate }: { title: string; children: React.ReactNode; navigate: Props['navigate'] }) {
   return <div className="portfolio-page">
     <header className="portfolio-page-header">
-      <InternalLink href="/" navigate={navigate} className="page-back">← Home</InternalLink>
+      <InternalLink href="/" navigate={navigate} className="page-back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m12 5-7 7 7 7M5 12h14" /></svg>Home</InternalLink>
       <h1 tabIndex={-1}>{title}</h1>
     </header>
     {children}
@@ -44,7 +44,7 @@ const aboutPhotos: StackPhoto[] = [
 function AboutPage({ navigate }: { navigate: Props['navigate'] }) {
   return <div className="portfolio-page about-page">
     <header className="portfolio-page-header">
-      <InternalLink href="/" navigate={navigate} className="about-home-link"><span aria-hidden="true">←</span> Home</InternalLink>
+      <InternalLink href="/" navigate={navigate} className="about-home-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m12 5-7 7 7 7M5 12h14" /></svg>Home</InternalLink>
       <h1 tabIndex={-1}>More about me</h1>
     </header>
     <PhotoStack photos={aboutPhotos} />

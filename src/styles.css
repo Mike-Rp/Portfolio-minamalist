@@ -176,14 +176,15 @@ h1 { margin: 0; font-size: var(--type-hero); line-height: 1.15; letter-spacing: 
 
 .resume-mobile { display: none; }
 .resume-desktop { position: relative; flex: 0 0 40px; width: 40px; height: 40px; }
-.resume-desktop .action-resume { position: absolute; top: 0; left: 0; z-index: 2; box-sizing: border-box; width: 40px; height: 40px; min-height: 40px; max-height: 40px; transform: none; transition: width 300ms cubic-bezier(0.22, 1, 0.36, 1); }
-.resume-desktop .action-resume:hover, .resume-desktop .action-resume:focus-visible { width: 164px; }
+.resume-desktop .action-resume { position: absolute; top: 0; left: 0; z-index: 2; box-sizing: border-box; width: 40px; height: 40px; min-height: 40px; max-height: 40px; transform: none; transition: width 300ms cubic-bezier(0.22, 1, 0.36, 1), border-radius 180ms ease-out, border-color 180ms ease-out, background-color 180ms ease-out; }
+.resume-desktop .action-resume:hover, .resume-desktop .action-resume:focus-visible { width: 164px; border-radius: 12px; }
 .resume-desktop .action-resume:active { transform: none; }
 .resume-desktop .action-resume > .specular-button__label { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
 .resume-desktop .action-resume svg { position: absolute; top: 11px; left: 11px; }
 .resume-desktop .resume-label { position: absolute; top: 0; left: 36px; display: flex; align-items: center; height: 100%; white-space: nowrap; opacity: 0; clip-path: inset(0 100% 0 0); transition: opacity 300ms ease-out, clip-path 300ms cubic-bezier(0.22, 1, 0.36, 1); }
 .resume-desktop .action-resume:hover .resume-label, .resume-desktop .action-resume:focus-visible .resume-label { opacity: 1; clip-path: inset(0 0 0 0); }
-.action-resume { min-width: 0; height: 40px; min-height: 40px; padding: 0; overflow: hidden; border: 1px solid var(--color-muted); border-radius: 999px; background: transparent; color: var(--color-ink); font-family: inherit; font-size: 14px; font-weight: 500; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
+.action-resume { min-width: 0; height: 40px; min-height: 40px; padding: 0; overflow: hidden; border: 1px solid var(--color-muted); border-radius: 999px; background: transparent; color: var(--color-ink); font-family: inherit; font-size: 15px; font-weight: 600; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; transition: border-color 180ms ease-out, background-color 180ms ease-out, border-radius 180ms ease-out; }
+.action-resume:hover { border-color: var(--color-ink); background-color: var(--nav-current-bg); }
 .action-resume:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 3px; }
 .action-resume svg { width: 16px; height: 16px; flex: 0 0 auto; }
 @media (min-width: 701px) and (max-width: 1100px) {
@@ -204,8 +205,10 @@ h1 { margin: 0; font-size: var(--type-hero); line-height: 1.15; letter-spacing: 
 .homepage-sections { width: min(100%, 800px); margin: 92px auto 0; padding-bottom: 96px; }
 .portfolio-page { width: min(100%, 800px); margin-inline: auto; padding: 34px 0 48px; }
 .portfolio-page-header { display: flex; flex-direction: column; gap: 24px; margin-bottom: 52px; }
-.page-back { width: fit-content; color: var(--color-muted); font-size: 14px; text-decoration: none; }
-.page-back:hover, .page-text-link:hover { color: var(--color-ink); text-decoration: underline; text-underline-offset: 4px; }
+.page-back { display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: fit-content; min-height: 44px; padding-inline: 20px; border: 1px solid var(--color-line); border-radius: 12px; background: var(--surface-bg); color: var(--color-ink); font-size: 15px; font-weight: 600; text-decoration: none; transition: background-color 180ms ease-out, border-color 180ms ease-out; }
+.page-back:hover { background: var(--nav-current-bg); border-color: var(--color-muted); }
+.page-back svg, .about-home-link svg { width: 18px; height: 18px; flex: none; }
+.page-text-link:hover { color: var(--color-ink); text-decoration: underline; text-underline-offset: 4px; }
 .portfolio-page-header h1 { font-size: 34px; font-weight: 500; white-space: normal; }
 .page-section + .page-section { margin-top: 56px; }
 .page-section > h2 { display: flex; justify-content: space-between; margin: 0 0 20px; color: var(--color-muted); font-size: var(--type-section); font-weight: 500; }
@@ -213,10 +216,9 @@ h1 { margin: 0; font-size: var(--type-hero); line-height: 1.15; letter-spacing: 
 .page-text-link { display: inline-block; margin-top: 20px; font-size: 14px; font-weight: 500; text-decoration: underline; text-underline-offset: 4px; }
 .page-muted { color: var(--color-muted); }
 .about-page .portfolio-page-header { margin-bottom: 40px; }
-.about-home-link, .about-contact-link { display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 120px; height: 42px; border: 1px solid var(--color-line); border-radius: 999px; background: var(--surface-bg); color: var(--color-ink); font-size: 15px; font-weight: 500; text-decoration: none; transition: background 150ms ease, border-color 150ms ease; }
+.about-home-link, .about-contact-link { display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 120px; min-height: 44px; padding-inline: 20px; border: 1px solid var(--color-line); border-radius: 12px; background: var(--surface-bg); color: var(--color-ink); font-size: 15px; font-weight: 600; text-decoration: none; transition: background-color 180ms ease-out, border-color 180ms ease-out; }
 .about-home-link:hover, .about-contact-link:hover { background: var(--nav-current-bg); border-color: var(--color-muted); }
 .about-home-link:focus-visible, .about-contact-link:focus-visible, .photo-card:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 3px; }
-.about-home-link span { font-size: 18px; line-height: 1; }
 .photo-stack { --photo-w: 300px; --photo-h: 375px; --photo-step: 64px; display: flex; flex-direction: column; align-items: center; gap: 18px; }
 .photo-stack-cards { position: relative; width: 100%; height: calc(var(--photo-h) + 24px); }
 .photo-card { position: absolute; top: 0; left: 50%; display: flex; align-items: center; justify-content: center; box-sizing: border-box; width: var(--photo-w); height: var(--photo-h); margin-left: calc(var(--photo-w) / -2); padding: 0; overflow: hidden; border: 4px solid var(--surface-bg); border-radius: 22px; background: var(--photo-bg); box-shadow: 0 2px 4px #00000012, 0 16px 36px #00000024; cursor: pointer; transform: translateX(calc(var(--d) * var(--photo-step))) translateY(calc(var(--a) * 6px)) rotate(calc(var(--d) * 5deg)) scale(calc(1 - var(--a) * .07)); transition: transform 750ms cubic-bezier(.22, 1, .36, 1), box-shadow 750ms cubic-bezier(.22, 1, .36, 1), opacity 450ms ease; }
@@ -233,11 +235,12 @@ h1 { margin: 0; font-size: var(--type-hero); line-height: 1.15; letter-spacing: 
 .photo-dots span.is-active { width: 18px; background: var(--color-ink); }
 .photo-hint { color: var(--caption); font-size: 13px; }
 .about-copy { margin-top: 52px; }
-.about-identity { margin-bottom: 24px; }
-.about-identity h2 { margin: 0; font-size: 19px; font-weight: 600; line-height: 1.3; }
-.about-identity p { margin: 2px 0 0; color: var(--color-muted); font-size: 15px; line-height: 1.5; }
-.about-copy > p { margin: 0 0 18px; color: var(--color-muted); font-size: 17px; font-weight: 500; line-height: 1.65; }
-.about-contact-link { width: 136px; height: 44px; margin-top: 8px; }
+.about-identity { margin-bottom: 28px; }
+.about-identity h2 { margin: 0; font-size: 36px; font-weight: 600; line-height: 1.2; }
+.about-identity p { margin: 8px 0 0; color: var(--color-muted); font-size: 18px; font-weight: 500; line-height: 1.5; }
+.about-copy > p { margin: 0 0 24px; color: var(--color-muted); font-size: 18px; font-weight: 500; line-height: 1.7; }
+.about-copy > p:last-of-type { margin-bottom: 28px; }
+.about-contact-link { width: auto; height: 46px; padding-inline: 26px; }
 .about-experience { margin-top: 76px; }
 .about-page .about-experience + .page-section { margin-top: 56px; }
 .page-empty { margin: 0; padding: 18px 0; border-top: 1px solid var(--color-line); color: var(--color-muted); font-size: var(--type-secondary); line-height: 1.5; }
@@ -254,7 +257,7 @@ h1 { margin: 0; font-size: var(--type-hero); line-height: 1.15; letter-spacing: 
 .experience-row h3, .experience-row h4, .project-copy h3 { margin: 0; font-size: var(--type-row-title); font-weight: 500; line-height: 1.35; }
 .experience-row p, .project-copy p { margin: 3px 0 0; color: var(--color-muted); font-size: var(--type-secondary); line-height: 1.4; }
 .experience-row time { flex: 0 0 auto; color: var(--caption); font-size: 14px; }
-.editorial-more { display: block; min-height: 40px; margin: 14px auto 0; padding: 0 18px; border: 1px solid var(--color-line); border-radius: 999px; background: var(--surface-bg); color: var(--color-ink); font-size: 14px; font-weight: 500; cursor: pointer; transition: background 140ms ease; }
+.editorial-more { display: block; min-height: 44px; margin: 14px auto 0; padding: 0 20px; border: 1px solid var(--color-line); border-radius: 12px; background: var(--surface-bg); color: var(--color-ink); font-size: 15px; font-weight: 600; cursor: pointer; transition: background-color 180ms ease-out, border-color 180ms ease-out; }
 .editorial-more:hover { background: var(--nav-current-bg); }
 .education-block { margin-top: 44px; }
 .editorial-subheading { margin-bottom: 18px; }
@@ -320,6 +323,9 @@ h1 { margin: 0; font-size: var(--type-hero); line-height: 1.15; letter-spacing: 
 
 @media (max-width: 700px) {
   .about-copy { margin-top: 40px; }
+  .about-identity h2 { font-size: 28px; }
+  .about-identity p { font-size: 16px; }
+  .about-contact-link { height: 44px; padding-inline: 24px; }
   .about-experience { margin-top: 64px; }
   .portfolio-page { padding-top: 8px; }
   .portfolio-page-header h1 { font-size: 28px; }
@@ -332,6 +338,7 @@ h1 { margin: 0; font-size: var(--type-hero); line-height: 1.15; letter-spacing: 
   .resume-desktop { display: none; }
   .resume-mobile { display: flex; justify-content: center; margin-top: 16px; }
   .resume-mobile .action-resume { width: 170px; height: 44px; min-height: 44px; padding: 0 14px; }
+  .resume-mobile .action-resume { border-radius: 12px; }
   .resume-mobile .action-resume > .specular-button__label { width: 100%; justify-content: center; }
   .intro-copy { padding-top: 28px; }
   h1 { font-size: clamp(28px, 7.5vw, 30px); }
