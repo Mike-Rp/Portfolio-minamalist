@@ -9,6 +9,11 @@ import AnimatedList from './components/reactbits/AnimatedList';
 import HomepageSections from './components/HomepageSections';
 import PortfolioPages from './components/PortfolioPages';
 import profilePhoto from '../imageprofileportfolio.png';
+import { portraitDitherMask } from './components/portraitDither';
+
+const portraitIntroOnThisLoad = window.location.pathname === '/';
+let portraitIntroUsed = false;
+let pageEntranceUsed = false;
 
 const resumeAssets = import.meta.glob<string>('./assets/resume/*.pdf', { eager: true, query: '?url', import: 'default' });
 const resumeUrl = Object.values(resumeAssets)[0];
@@ -137,10 +142,61 @@ function Sidebar({ onContact, collapsed, onToggleCollapse, pathname, navigate }:
 function ProfilePhoto({ reduced }: { reduced: boolean }) {
   const [active, setActive] = useState(false);
   const [suppressHover, setSuppressHover] = useState(false);
+  const [entranceDone, setEntranceDone] = useState(() => reduced || !portraitIntroOnThisLoad || portraitIntroUsed);
+  const imageRef = useRef<HTMLImageElement>(null);
+  const effectRef = useRef<HTMLDivElement>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const frameRef = useRef(0);
+  const cancelledRef = useRef(false);
+
+  const finishEntrance = () => {
+    cancelledRef.current = true;
+    if (timerRef.current) clearTimeout(timerRef.current);
+    cancelAnimationFrame(frameRef.current);
+    if (effectRef.current) effectRef.current.style.maskImage = 'none';
+    setEntranceDone(true);
+  };
+
+  useEffect(() => {
+    if (entranceDone || reduced) return;
+    portraitIntroUsed = true;
+    cancelledRef.current = false;
+    const image = imageRef.current;
+    const effect = effectRef.current;
+    if (!image || !effect) return;
+    effect.style.maskImage = 'linear-gradient(transparent, transparent)';
+    const begin = () => {
+      if (cancelledRef.current) return;
+      timerRef.current = setTimeout(() => {
+        const width = Math.ceil(effect.clientWidth);
+        const height = Math.ceil(effect.clientHeight);
+        if (!width || !height) { finishEntrance(); return; }
+        const start = performance.now();
+        const draw = (now: number) => {
+          if (cancelledRef.current) return;
+          const progress = Math.min(1, (now - start) / 700);
+          effect.style.maskImage = portraitDitherMask(progress, width, height);
+          if (progress < 1) frameRef.current = requestAnimationFrame(draw);
+          else finishEntrance();
+        };
+        frameRef.current = requestAnimationFrame(draw);
+      }, 1800);
+    };
+    if (image.complete && image.naturalWidth) begin();
+    else image.addEventListener('load', begin, { once: true });
+    return () => {
+      cancelledRef.current = true;
+      if (timerRef.current) clearTimeout(timerRef.current);
+      cancelAnimationFrame(frameRef.current);
+      image.removeEventListener('load', begin);
+    };
+  }, []);
+
+  useEffect(() => { if (reduced && !entranceDone) finishEntrance(); }, [reduced]);
   return (
-    <button type="button" className={`profile-photo${active ? ' is-active' : ''}`} aria-label="Show profile photo in color" aria-pressed={active} onPointerMove={event => { if (event.pointerType === 'mouse') setSuppressHover(false); }} onClick={() => { setSuppressHover(active); setActive(value => !value); }}>
-      <img src={profilePhoto} alt="Mikhail Respicio taking a mirror portrait" width="307" height="291" fetchPriority="high" />
-      {!reduced && <HalftoneReveal src={profilePhoto} fullReveal={active} suppressHover={suppressHover} fit="cover" mode="mono" shape="dot" cellSize={4} dotScale={0.88} halftoneStrength={0.12} inkColor="#111111" paperColor="#f5f5f5" contrast={1.2} brightness={0.12} invert={false} roughness={0} misregistration={0} revealRadius={150} softness={0.38} linger={0.9} reverse={false} wander={false} clickBurst={false} intro className="photo-effect" />}
+    <button type="button" className={`profile-photo${active ? ' is-active' : ''}${entranceDone ? '' : ' is-entering'}`} aria-label={active ? 'Show profile photo in black and white' : 'Show profile photo in color'} aria-pressed={active} onPointerMove={event => { if (event.pointerType === 'mouse') setSuppressHover(false); }} onClick={() => { if (!entranceDone) finishEntrance(); setSuppressHover(active); setActive(value => !value); }}>
+      <img ref={imageRef} src={profilePhoto} alt="Mikhail Respicio taking a mirror portrait" width="307" height="291" fetchPriority="high" />
+      {!reduced && <div ref={effectRef} className="photo-effect-mask"><HalftoneReveal src={profilePhoto} fullReveal={active} suppressHover={suppressHover} fit="cover" mode="mono" shape="dot" cellSize={4} dotScale={0.72} halftoneStrength={0.08} inkColor="#111111" paperColor="#f5f5f5" contrast={1.06} brightness={0.09} invert={false} roughness={0} misregistration={0} revealRadius={150} softness={0.38} linger={0.9} reverse={false} wander={false} clickBurst={false} intro={false} className="photo-effect" /></div>}
     </button>
   );
 }
@@ -162,6 +218,7 @@ function Statistic({ value, suffix, label, href, pending = false, navigate, redu
 
 export default function App() {
   const reduced = useReducedMotion();
+  const [showPageGrain, setShowPageGrain] = useState(() => !reduced && !pageEntranceUsed);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [pathname, setPathname] = useState(() => window.location.pathname.replace(/\/$/, '') || '/');
   const previousPathname = useRef(pathname);
@@ -171,6 +228,13 @@ export default function App() {
     window.scrollTo(0, 0);
   };
   const openResume = () => { if (resumeUrl) window.open(resumeUrl, '_blank', 'noopener,noreferrer'); };
+
+  useEffect(() => {
+    pageEntranceUsed = true;
+    if (reduced) { setShowPageGrain(false); return; }
+    const timer = setTimeout(() => setShowPageGrain(false), 600);
+    return () => clearTimeout(timer);
+  }, [reduced]);
 
   useEffect(() => {
     const onPopState = () => setPathname(window.location.pathname.replace(/\/$/, '') || '/');
@@ -187,6 +251,8 @@ export default function App() {
 
 
   return (
+    <>
+    {showPageGrain && <div className="page-entrance-grain" aria-hidden="true" />}
     <ClickSpark sparkColor="currentColor" sparkSize={7} sparkRadius={25} sparkCount={6} sparkWidth={1.4} duration={420} cooldown={600} easing="ease-out" shape="line" randomness={0.1} glow={0} ring={false} layer="front" layerZIndex={30} disabled={reduced} ignoreSelector=".theme-toggle">
     <div className={`site-shell${sidebarCollapsed ? ' sidebar-is-collapsed' : ''}`}>
       <Sidebar onContact={() => navigate('/contact')} collapsed={sidebarCollapsed} onToggleCollapse={() => setSidebarCollapsed(value => !value)} pathname={pathname} navigate={navigate} />
@@ -234,5 +300,6 @@ export default function App() {
       </main>
     </div>
     </ClickSpark>
+    </>
   );
 }
