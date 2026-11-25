@@ -8,6 +8,7 @@ import DayNightToggle from './components/DayNightToggle';
 import AnimatedList from './components/reactbits/AnimatedList';
 import HomepageSections from './components/HomepageSections';
 import PortfolioPages from './components/PortfolioPages';
+import ScrollReveal from './components/ScrollReveal';
 import profilePhoto from '../imageprofileportfolio.png';
 import { portraitDitherMask } from './components/portraitDither';
 
@@ -289,11 +290,11 @@ export default function App() {
             </div>
           </div>
 
-          <div className="statistics" aria-label="Portfolio statistics">
+          <ScrollReveal className="statistics" aria-label="Portfolio statistics">
             <Statistic value={5} suffix={'+\u00a0yrs'} label="Creative Design" href="/projects" navigate={navigate} reduced={reduced} />
             <Statistic value={2} suffix={'+\u00a0yrs'} label="Building Software" href="/projects" navigate={navigate} reduced={reduced} />
             <Statistic value={2} suffix="×" label="Hackathon Winner" pending navigate={navigate} reduced={reduced} />
-          </div>
+          </ScrollReveal>
         </section>
         <HomepageSections />
         </> : <PortfolioPages pathname={pathname} navigate={navigate} />}

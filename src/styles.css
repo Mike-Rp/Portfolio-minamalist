@@ -210,8 +210,8 @@ h1 { margin: 0; font-size: var(--type-hero); line-height: 1.15; letter-spacing: 
 .page-text-link:hover { color: var(--color-ink); text-decoration: underline; text-underline-offset: 4px; }
 .portfolio-page-header h1 { font-size: 34px; font-weight: 500; white-space: normal; }
 .page-section + .page-section { margin-top: 56px; }
-.page-section > h2 { display: flex; justify-content: space-between; margin: 0 0 20px; color: var(--color-muted); font-size: var(--type-section); font-weight: 500; }
-.page-section > h2 span { color: var(--caption); font-size: 13px; }
+.page-section > .scroll-reveal > h2 { display: flex; justify-content: space-between; margin: 0 0 20px; color: var(--color-muted); font-size: var(--type-section); font-weight: 500; }
+.page-section > .scroll-reveal > h2 span { color: var(--caption); font-size: 13px; }
 .page-text-link { display: inline-block; margin-top: 20px; font-size: 14px; font-weight: 500; text-decoration: underline; text-underline-offset: 4px; }
 .page-muted { color: var(--color-muted); }
 .about-page .portfolio-page-header { margin-bottom: 40px; }
@@ -237,8 +237,8 @@ h1 { margin: 0; font-size: var(--type-hero); line-height: 1.15; letter-spacing: 
 .about-identity { margin-bottom: 28px; }
 .about-identity h2 { margin: 0; font-size: 36px; font-weight: 600; line-height: 1.2; }
 .about-identity p { margin: 8px 0 0; color: var(--color-muted); font-size: 18px; font-weight: 500; line-height: 1.5; }
-.about-copy > p { margin: 0 0 24px; color: var(--color-muted); font-size: 18px; font-weight: 500; line-height: 1.7; }
-.about-copy > p:last-of-type { margin-bottom: 28px; }
+.about-copy > .scroll-reveal > p { margin: 0 0 24px; color: var(--color-muted); font-size: 18px; font-weight: 500; line-height: 1.7; }
+.about-copy > .scroll-reveal > p:last-of-type { margin-bottom: 28px; }
 .about-contact-link { width: auto; height: 46px; padding-inline: 20px; }
 .about-experience { margin-top: 76px; }
 .about-page .about-experience + .page-section { margin-top: 56px; }
@@ -328,7 +328,7 @@ h1 { margin: 0; font-size: var(--type-hero); line-height: 1.15; letter-spacing: 
   .about-experience { margin-top: 64px; }
   .portfolio-page { padding-top: 8px; }
   .portfolio-page-header h1 { font-size: 28px; }
-  .about-copy > p { font-size: 16px; }
+  .about-copy > .scroll-reveal > p { font-size: 16px; }
   .mobile-sidebar-bar { padding-inline: 20px; }
   .main-content { padding: 96px 24px 48px; }
   .hero { padding-top: 62px; }

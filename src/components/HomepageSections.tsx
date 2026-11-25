@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { experience, projects, stack } from '../homepageData';
+import ScrollReveal from './ScrollReveal';
 
 type ContributionDay = { date: string; count: number; level: number };
 type ContributionData = { days: ContributionDay[]; total: number };
@@ -12,7 +14,12 @@ function SectionHeading({ id, children, count }: { id: string; children: string;
 
 function ExperienceSection() {
   const [expanded, setExpanded] = useState(false);
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => ScrollTrigger.refresh());
+    return () => cancelAnimationFrame(frame);
+  }, [expanded]);
   return <section className="editorial-section" aria-labelledby="experience-title">
+    <ScrollReveal>
     <SectionHeading id="experience-title" count={experience.length}>Experience</SectionHeading>
     <div id="experience-list">
       {experience.slice(0, expanded ? experience.length : 3).map(item => <div className="experience-row" key={`${item.role}-${item.year}`}>
@@ -24,13 +31,19 @@ function ExperienceSection() {
       <h3 className="editorial-subheading">Education</h3>
       <div className="experience-row"><div><h4>BS Information Technology</h4><p>STI College</p></div><time>2023</time></div>
     </div>
+    </ScrollReveal>
   </section>;
 }
 
 function ProjectsSection() {
   const [expanded, setExpanded] = useState(false);
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => ScrollTrigger.refresh());
+    return () => cancelAnimationFrame(frame);
+  }, [expanded]);
   const shown = expanded ? projects : projects.slice(0, 3);
   return <section className="editorial-section" aria-labelledby="projects-title">
+    <ScrollReveal>
     <SectionHeading id="projects-title" count={projects.length}>Featured Projects</SectionHeading>
     <div id="projects-list">
       {shown.map((project, index) => <div className={`project-row${!expanded && index === 2 ? ' is-preview' : ''}`} key={project.title}>
@@ -39,13 +52,16 @@ function ProjectsSection() {
       </div>)}
     </div>
     <button className="editorial-more" type="button" aria-expanded={expanded} aria-controls="projects-list" onClick={() => setExpanded(value => !value)}>{expanded ? 'Show less' : '+ 10 more'}</button>
+    </ScrollReveal>
   </section>;
 }
 
 function StackSection() {
   return <section className="editorial-section" aria-labelledby="stack-title">
+    <ScrollReveal>
     <SectionHeading id="stack-title">Stack and Skills</SectionHeading>
     <div>{stack.map(group => <div className="stack-row" key={group.category}><h3>{group.category}</h3><p>{group.skills.join(', ')}</p></div>)}</div>
+    </ScrollReveal>
   </section>;
 }
 
@@ -87,6 +103,7 @@ function ContributionsSection() {
 
   const days = data?.days ?? [];
   return <section className="editorial-section" aria-labelledby="github-title">
+    <ScrollReveal>
     <div className="editorial-heading"><h2 id="github-title">GitHub Contributions</h2><a href="https://github.com/Mike-Rp" target="_blank" rel="noopener noreferrer">View GitHub ↗</a></div>
     {status === 'ready' && data ? <>
       <p className="contribution-total">{data.total.toLocaleString()} contributions in the last year</p>
@@ -95,6 +112,7 @@ function ContributionsSection() {
       </div>
       <div className="contribution-legend" aria-hidden="true">Less <span className="level-0" /><span className="level-1" /><span className="level-2" /><span className="level-3" /><span className="level-4" /> More</div>
     </> : <p className="contribution-status" role="status">{status === 'loading' ? 'Loading contribution activity…' : 'Contribution activity is unavailable right now.'}</p>}
+    </ScrollReveal>
   </section>;
 }
 
